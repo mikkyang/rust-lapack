@@ -12,3 +12,31 @@ pub trait Matrix<T> {
     fn as_ptr(&self) -> *const T;
     fn as_mut_ptr(&mut self) -> *mut T;
 }
+
+#[cfg(test)]
+pub mod tests {
+    use matrix::Matrix;
+    use types::CLPK_integer;
+
+    impl<T> Matrix<T> for (CLPK_integer, CLPK_integer, Vec<T>) {
+        fn rows(&self) -> CLPK_integer {
+            let &(rows, _, _) = self;
+            rows
+        }
+
+        fn cols(&self) -> CLPK_integer {
+            let &(_, cols, _) = self;
+            cols
+        }
+
+        fn as_ptr(&self) -> *const T {
+            let &(_, _, ref v) = self;
+            v.as_slice().as_ptr()
+        }
+
+        fn as_mut_ptr(&mut self) -> *mut T {
+            let &(_, _, ref mut v) = self;
+            v.as_mut_slice().as_mut_ptr()
+        }
+    }
+}
