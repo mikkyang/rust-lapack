@@ -42,3 +42,21 @@ gesv_impl!(f32,         sgesv_)
 gesv_impl!(f64,         dgesv_)
 gesv_impl!(Complex32,   cgesv_)
 gesv_impl!(Complex64,   zgesv_)
+
+#[cfg(test)]
+mod gesv_tests {
+
+    use linear_equations::ops::Gesv;
+
+    #[test]
+    fn real() {
+        let mut a = (2i32, 2i32, vec![1.0f64, 4.0, 1.0, 2.0]);
+        let mut b = (2i32, 1i32, vec![-2.0f64, 2.0]);
+        let mut p = (2i32, 2i32, vec![0i32, 0]);
+
+        Gesv::gesv(&mut a, &mut b, &mut p);
+
+        let (_, _, x) = b;
+        assert_eq!(x, vec![3.0f64, -5.0]);
+    }
+}
