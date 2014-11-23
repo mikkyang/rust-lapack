@@ -6,4 +6,5 @@
 mod pointer;
 mod scalar;
 mod types;
+pub mod matrix;
 pub mod linear_equations;
