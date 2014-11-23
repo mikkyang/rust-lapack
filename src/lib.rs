@@ -4,5 +4,6 @@
 #![feature(macro_rules)]
 
 mod pointer;
+mod scalar;
 mod types;
 pub mod linear_equations;
