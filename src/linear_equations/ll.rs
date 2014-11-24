@@ -52,4 +52,22 @@ extern "C" {
             ldab: *const CLPK_integer, ipiv: *mut CLPK_integer,
             b: *mut CLPK_doublecomplex, ldb: *const CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn sgtsv_(n: *const CLPK_integer, nrhs: *const CLPK_integer, dl: *mut CLPK_real,
+            d: *mut CLPK_real, du: *mut CLPK_real, b: *mut CLPK_real,
+            ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn dgtsv_(n: *const CLPK_integer, nrhs: *const CLPK_integer, dl: *mut CLPK_doublereal,
+            d: *mut CLPK_doublereal, du: *mut CLPK_doublereal,
+            b: *mut CLPK_doublereal, ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn cgtsv_(n: *const CLPK_integer, nrhs: *const CLPK_integer, dl: *mut CLPK_complex,
+            d: *mut CLPK_complex, du: *mut CLPK_complex, b: *mut CLPK_complex,
+            ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zgtsv_(n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            dl: *mut CLPK_doublecomplex, d: *mut CLPK_doublecomplex,
+            du: *mut CLPK_doublecomplex, b: *mut CLPK_doublecomplex,
+            ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
 }

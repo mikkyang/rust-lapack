@@ -12,6 +12,7 @@ use linear_equations::ll;
 use matrix::{
     Matrix,
     BandMatrix,
+    TridiagonalMatrix,
 };
 use pointer::CPtr;
 use scalar::Scalar;
@@ -92,3 +93,31 @@ gbsv_impl!(f32,         sgbsv_)
 gbsv_impl!(f64,         dgbsv_)
 gbsv_impl!(Complex32,   cgbsv_)
 gbsv_impl!(Complex64,   zgbsv_)
+
+pub trait Gtsv {
+    fn gtsv(a: &mut TridiagonalMatrix<Self>, b: &mut Matrix<Self>);
+}
+
+macro_rules! gtsv_impl(
+    ($t: ty, $ll: ident) => (
+        impl Gtsv for $t {
+            fn gtsv(a: &mut TridiagonalMatrix<$t>, b: &mut Matrix<$t>) {
+                unsafe {
+                    let mut info: CLPK_integer = 0;
+
+                    ll::$ll(a.cols().as_const(), b.cols().as_const(),
+                        a.sub_diagonal_mut_ptr().as_c_ptr(),
+                        a.diagonal_mut_ptr().as_c_ptr(),
+                        a.sup_diagonal_mut_ptr().as_c_ptr(),
+                        b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                        &mut info as *mut CLPK_integer);
+                }
+            }
+        }
+    );
+)
+
+gtsv_impl!(f32,         sgtsv_)
+gtsv_impl!(f64,         dgtsv_)
+gtsv_impl!(Complex32,   cgtsv_)
+gtsv_impl!(Complex64,   zgtsv_)
