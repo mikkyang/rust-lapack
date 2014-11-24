@@ -4,6 +4,7 @@
 
 extern crate libc;
 use self::libc::{
+    c_char,
     c_int,
 };
 
@@ -69,5 +70,22 @@ extern "C" {
             dl: *mut CLPK_doublecomplex, d: *mut CLPK_doublecomplex,
             du: *mut CLPK_doublecomplex, b: *mut CLPK_doublecomplex,
             ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+
+    pub fn sposv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            a: *mut CLPK_real, lda: *const CLPK_integer, b: *mut CLPK_real,
+            ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn dposv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            a: *mut CLPK_doublereal, lda: *const CLPK_integer, b: *mut CLPK_doublereal,
+            ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn cposv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            a: *mut CLPK_complex, lda: *const CLPK_integer, b: *mut CLPK_complex,
+            ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zposv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            a: *mut CLPK_doublecomplex, lda: *const CLPK_integer,
+            b: *mut CLPK_doublecomplex, ldb: *const CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
 }

@@ -12,12 +12,14 @@ use linear_equations::ll;
 use matrix::{
     Matrix,
     BandMatrix,
+    SymmetricMatrix,
     TridiagonalMatrix,
 };
 use pointer::CPtr;
 use scalar::Scalar;
 use types::{
     CLPK_integer,
+    Symmetry,
 };
 
 pub trait Gesv {
@@ -120,3 +122,30 @@ gtsv_impl!(f32,         sgtsv_)
 gtsv_impl!(f64,         dgtsv_)
 gtsv_impl!(Complex32,   cgtsv_)
 gtsv_impl!(Complex64,   zgtsv_)
+
+pub trait Posv {
+    fn posv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>);
+}
+
+macro_rules! posv_impl(
+    ($t: ty, $ll: ident) => (
+        impl Posv for $t {
+            fn posv(a: &mut SymmetricMatrix<$t>, b: &mut Matrix<$t>) {
+                unsafe {
+                    let mut info: CLPK_integer = 0;
+
+                    ll::$ll(a.symmetry().as_i8().as_const(),
+                        a.cols().as_const(), b.cols().as_const(),
+                        a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
+                        b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                        &mut info as *mut CLPK_integer);
+                }
+            }
+        }
+    );
+)
+
+posv_impl!(f32,         sposv_)
+posv_impl!(f64,         dposv_)
+posv_impl!(Complex32,   cposv_)
+posv_impl!(Complex64,   zposv_)
