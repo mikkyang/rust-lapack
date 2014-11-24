@@ -7,6 +7,7 @@ extern crate num;
 
 use self::num::complex::Complex;
 use self::libc::{
+    c_char,
     c_double,
     c_float,
     c_int,
@@ -46,6 +47,7 @@ macro_rules! scalar_impl(
     );
 )
 
+scalar_impl!(i8, c_char)
 scalar_impl!(i32, c_int)
 scalar_impl!(f32, c_float)
 scalar_impl!(f64, c_double)
