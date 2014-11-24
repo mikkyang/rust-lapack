@@ -13,6 +13,11 @@ pub trait Matrix<T> {
     fn as_mut_ptr(&mut self) -> *mut T;
 }
 
+pub trait BandMatrix<T>: Matrix<T> {
+    fn sub_diagonals(&self) -> CLPK_integer;
+    fn sup_diagonals(&self) -> CLPK_integer;
+}
+
 #[cfg(test)]
 pub mod tests {
     use matrix::Matrix;
