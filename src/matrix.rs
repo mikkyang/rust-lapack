@@ -4,6 +4,7 @@
 
 use types::{
     CLPK_integer,
+    Symmetry,
 };
 
 pub trait Matrix<T> {
@@ -21,6 +22,10 @@ pub trait BandMatrix<T>: Matrix<T> {
 pub trait TridiagonalMatrix<T>: Matrix<T> {
     fn as_ptrs(&self) -> (*const T, *const T, *const T);
     fn as_mut_ptrs(&self) -> (*mut T, *mut T, *mut T);
+}
+
+pub trait SymmetricMatrix<T>: Matrix<T> {
+    fn symmetry(&self) -> Symmetry;
 }
 
 #[cfg(test)]

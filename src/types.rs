@@ -21,3 +21,17 @@ pub type CLPK_doublereal = c_double;
 pub type CLPK_complex = c_void;
 #[allow(non_camel_case_types)]
 pub type CLPK_doublecomplex = c_void;
+
+pub enum Symmetry {
+    Upper,
+    Lower,
+}
+
+impl Symmetry {
+    pub fn as_i8(self) -> i8 {
+        match self {
+            Symmetry::Upper => 85,
+            Symmetry::Lower => 76,
+        }
+    }
+}
