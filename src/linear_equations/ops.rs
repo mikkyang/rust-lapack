@@ -9,7 +9,10 @@ use self::num::complex::{
     Complex64,
 };
 use linear_equations::ll;
-use matrix::Matrix;
+use matrix::{
+    Matrix,
+    BandMatrix,
+};
 use pointer::CPtr;
 use scalar::Scalar;
 use types::{
@@ -60,3 +63,32 @@ mod gesv_tests {
         assert_eq!(x, vec![3.0f64, -5.0]);
     }
 }
+
+pub trait Gbsv {
+    fn gbsv(a: &mut BandMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>);
+}
+
+macro_rules! gbsv_impl(
+    ($t: ty, $ll: ident) => (
+        impl Gbsv for $t {
+            fn gbsv(a: &mut BandMatrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<CLPK_integer>) {
+                unsafe {
+                    let mut info: CLPK_integer = 0;
+
+                    ll::$ll(a.cols().as_const(),
+                        a.sub_diagonals().as_const(), a.sup_diagonals().as_const(),
+                        b.cols().as_const(),
+                        a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
+                        p.as_mut_ptr().as_c_ptr(),
+                        b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                        &mut info as *mut CLPK_integer);
+                }
+            }
+        }
+    );
+)
+
+gbsv_impl!(f32,         sgbsv_)
+gbsv_impl!(f64,         dgbsv_)
+gbsv_impl!(Complex32,   cgbsv_)
+gbsv_impl!(Complex64,   zgbsv_)
