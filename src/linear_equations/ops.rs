@@ -176,3 +176,36 @@ ppsv_impl!(f32,         sppsv_)
 ppsv_impl!(f64,         dppsv_)
 ppsv_impl!(Complex32,   cppsv_)
 ppsv_impl!(Complex64,   zppsv_)
+
+pub trait Pbsv<M> where M: SymmetricMatrix<Self> + BandMatrix<Self> {
+    fn pbsv(a: &mut M, b: &mut Matrix<Self>);
+}
+
+macro_rules! pbsv_impl(
+    ($t: ty, $ll: ident) => (
+        impl<M> Pbsv<M> for $t where M: SymmetricMatrix<$t> + BandMatrix<$t> {
+            fn pbsv(a: &mut M, b: &mut Matrix<$t>) {
+                unsafe {
+                    let mut info: CLPK_integer = 0;
+
+                    let diag = match a.symmetry() {
+                        Symmetry::Upper => a.sup_diagonals(),
+                        Symmetry::Lower => a.sub_diagonals(),
+                    };
+
+                    ll::$ll(a.symmetry().as_i8().as_const(),
+                        a.cols().as_const(), diag.as_const(),
+                        b.cols().as_const(),
+                        a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
+                        b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                        &mut info as *mut CLPK_integer);
+                }
+            }
+        }
+    );
+)
+
+pbsv_impl!(f32,         spbsv_)
+pbsv_impl!(f64,         dpbsv_)
+pbsv_impl!(Complex32,   cpbsv_)
+pbsv_impl!(Complex64,   zpbsv_)

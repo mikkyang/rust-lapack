@@ -102,4 +102,22 @@ extern "C" {
             ap: *mut CLPK_doublecomplex, b: *mut CLPK_doublecomplex,
             ldb: *const CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn spbsv_(uplo: *const c_char, n: *const CLPK_integer, kd: *const CLPK_integer,
+            nrhs: *const CLPK_integer, ab: *mut CLPK_real, ldab: *const CLPK_integer,
+            b: *mut CLPK_real, ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn dpbsv_(uplo: *const c_char, n: *const CLPK_integer, kd: *const CLPK_integer,
+            nrhs: *const CLPK_integer, ab: *mut CLPK_doublereal, ldab: *const CLPK_integer,
+            b: *mut CLPK_doublereal, ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn cpbsv_(uplo: *const c_char, n: *const CLPK_integer, kd: *const CLPK_integer,
+            nrhs: *const CLPK_integer, ab: *mut CLPK_complex, ldab: *const CLPK_integer,
+            b: *mut CLPK_complex, ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zpbsv_(uplo: *const c_char, n: *const CLPK_integer, kd: *const CLPK_integer,
+            nrhs: *const CLPK_integer, ab: *mut CLPK_doublecomplex,
+            ldab: *const CLPK_integer, b: *mut CLPK_doublecomplex,
+            ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
 }
