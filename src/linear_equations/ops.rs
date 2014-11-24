@@ -149,3 +149,30 @@ posv_impl!(f32,         sposv_)
 posv_impl!(f64,         dposv_)
 posv_impl!(Complex32,   cposv_)
 posv_impl!(Complex64,   zposv_)
+
+pub trait Ppsv {
+    fn ppsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>);
+}
+
+macro_rules! ppsv_impl(
+    ($t: ty, $ll: ident) => (
+        impl Ppsv for $t {
+            fn ppsv(a: &mut SymmetricMatrix<$t>, b: &mut Matrix<$t>) {
+                unsafe {
+                    let mut info: CLPK_integer = 0;
+
+                    ll::$ll(a.symmetry().as_i8().as_const(),
+                        a.cols().as_const(), b.cols().as_const(),
+                        a.as_mut_ptr().as_c_ptr(),
+                        b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                        &mut info as *mut CLPK_integer);
+                }
+            }
+        }
+    );
+)
+
+ppsv_impl!(f32,         sppsv_)
+ppsv_impl!(f64,         dppsv_)
+ppsv_impl!(Complex32,   cppsv_)
+ppsv_impl!(Complex64,   zppsv_)
