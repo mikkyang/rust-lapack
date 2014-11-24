@@ -104,11 +104,10 @@ macro_rules! gtsv_impl(
             fn gtsv(a: &mut TridiagonalMatrix<$t>, b: &mut Matrix<$t>) {
                 unsafe {
                     let mut info: CLPK_integer = 0;
+                    let (sub, diag, sup) = a.as_mut_ptrs();
 
                     ll::$ll(a.cols().as_const(), b.cols().as_const(),
-                        a.sub_diagonal_mut_ptr().as_c_ptr(),
-                        a.diagonal_mut_ptr().as_c_ptr(),
-                        a.sup_diagonal_mut_ptr().as_c_ptr(),
+                        sub.as_c_ptr(), diag.as_c_ptr(), sup.as_c_ptr(),
                         b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
                         &mut info as *mut CLPK_integer);
                 }

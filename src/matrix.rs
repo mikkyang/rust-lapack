@@ -19,12 +19,8 @@ pub trait BandMatrix<T>: Matrix<T> {
 }
 
 pub trait TridiagonalMatrix<T>: Matrix<T> {
-    fn diagonal_ptr(&self) -> *const T;
-    fn sub_diagonal_ptr(&self) -> *const T;
-    fn sup_diagonal_ptr(&self) -> *const T;
-    fn diagonal_mut_ptr(&mut self) -> *mut T;
-    fn sub_diagonal_mut_ptr(&mut self) -> *mut T;
-    fn sup_diagonal_mut_ptr(&mut self) -> *mut T;
+    fn as_ptrs(&self) -> (*const T, *const T, *const T);
+    fn as_mut_ptrs(&self) -> (*mut T, *mut T, *mut T);
 }
 
 #[cfg(test)]
