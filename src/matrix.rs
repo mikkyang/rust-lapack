@@ -18,6 +18,15 @@ pub trait BandMatrix<T>: Matrix<T> {
     fn sup_diagonals(&self) -> CLPK_integer;
 }
 
+pub trait TridiagonalMatrix<T>: Matrix<T> {
+    fn diagonal_ptr(&self) -> *const T;
+    fn sub_diagonal_ptr(&self) -> *const T;
+    fn sup_diagonal_ptr(&self) -> *const T;
+    fn diagonal_mut_ptr(&mut self) -> *mut T;
+    fn sub_diagonal_mut_ptr(&mut self) -> *mut T;
+    fn sup_diagonal_mut_ptr(&mut self) -> *mut T;
+}
+
 #[cfg(test)]
 pub mod tests {
     use matrix::Matrix;
