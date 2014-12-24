@@ -42,12 +42,12 @@ macro_rules! gesv_impl(
             }
         }
     );
-)
+);
 
-gesv_impl!(f32,         sgesv_)
-gesv_impl!(f64,         dgesv_)
-gesv_impl!(Complex32,   cgesv_)
-gesv_impl!(Complex64,   zgesv_)
+gesv_impl!(f32,         sgesv_);
+gesv_impl!(f64,         dgesv_);
+gesv_impl!(Complex32,   cgesv_);
+gesv_impl!(Complex64,   zgesv_);
 
 #[cfg(test)]
 mod gesv_tests {
@@ -89,12 +89,12 @@ macro_rules! gbsv_impl(
             }
         }
     );
-)
+);
 
-gbsv_impl!(f32,         sgbsv_)
-gbsv_impl!(f64,         dgbsv_)
-gbsv_impl!(Complex32,   cgbsv_)
-gbsv_impl!(Complex64,   zgbsv_)
+gbsv_impl!(f32,         sgbsv_);
+gbsv_impl!(f64,         dgbsv_);
+gbsv_impl!(Complex32,   cgbsv_);
+gbsv_impl!(Complex64,   zgbsv_);
 
 pub trait Gtsv {
     fn gtsv(a: &mut TridiagonalMatrix<Self>, b: &mut Matrix<Self>);
@@ -116,12 +116,12 @@ macro_rules! gtsv_impl(
             }
         }
     );
-)
+);
 
-gtsv_impl!(f32,         sgtsv_)
-gtsv_impl!(f64,         dgtsv_)
-gtsv_impl!(Complex32,   cgtsv_)
-gtsv_impl!(Complex64,   zgtsv_)
+gtsv_impl!(f32,         sgtsv_);
+gtsv_impl!(f64,         dgtsv_);
+gtsv_impl!(Complex32,   cgtsv_);
+gtsv_impl!(Complex64,   zgtsv_);
 
 pub trait Posv {
     fn posv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>);
@@ -143,12 +143,12 @@ macro_rules! posv_impl(
             }
         }
     );
-)
+);
 
-posv_impl!(f32,         sposv_)
-posv_impl!(f64,         dposv_)
-posv_impl!(Complex32,   cposv_)
-posv_impl!(Complex64,   zposv_)
+posv_impl!(f32,         sposv_);
+posv_impl!(f64,         dposv_);
+posv_impl!(Complex32,   cposv_);
+posv_impl!(Complex64,   zposv_);
 
 pub trait Ppsv {
     fn ppsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>);
@@ -170,12 +170,12 @@ macro_rules! ppsv_impl(
             }
         }
     );
-)
+);
 
-ppsv_impl!(f32,         sppsv_)
-ppsv_impl!(f64,         dppsv_)
-ppsv_impl!(Complex32,   cppsv_)
-ppsv_impl!(Complex64,   zppsv_)
+ppsv_impl!(f32,         sppsv_);
+ppsv_impl!(f64,         dppsv_);
+ppsv_impl!(Complex32,   cppsv_);
+ppsv_impl!(Complex64,   zppsv_);
 
 pub trait Pbsv<M> where M: SymmetricMatrix<Self> + BandMatrix<Self> {
     fn pbsv(a: &mut M, b: &mut Matrix<Self>);
@@ -203,9 +203,9 @@ macro_rules! pbsv_impl(
             }
         }
     );
-)
+);
 
-pbsv_impl!(f32,         spbsv_)
-pbsv_impl!(f64,         dpbsv_)
-pbsv_impl!(Complex32,   cpbsv_)
-pbsv_impl!(Complex64,   zpbsv_)
+pbsv_impl!(f32,         spbsv_);
+pbsv_impl!(f64,         dpbsv_);
+pbsv_impl!(Complex32,   cpbsv_);
+pbsv_impl!(Complex64,   zpbsv_);
