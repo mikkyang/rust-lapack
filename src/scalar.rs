@@ -1,12 +1,8 @@
 // Copyright 2014 Michael Yang. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
-
-extern crate libc;
-extern crate num;
-
-use self::num::complex::Complex;
-use self::libc::{
+use num::complex::Complex;
+use libc::{
     c_char,
     c_double,
     c_float,
