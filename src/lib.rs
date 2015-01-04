@@ -16,3 +16,4 @@ mod types;
 pub mod matrix;
 pub mod linear_equations;
 pub mod least_squares;
+pub mod eigenvalues;
