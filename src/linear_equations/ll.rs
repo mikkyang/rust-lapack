@@ -184,4 +184,13 @@ extern "C" {
             ap: *mut CLPK_doublecomplex, ipiv: *mut CLPK_integer,
             b: *mut CLPK_doublecomplex, ldb: *const CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn chpsv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            ap: *mut CLPK_complex, ipiv: *mut CLPK_integer, b: *mut CLPK_complex,
+            ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zhpsv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            ap: *mut CLPK_doublecomplex, ipiv: *mut CLPK_integer,
+            b: *mut CLPK_doublecomplex, ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
 }
