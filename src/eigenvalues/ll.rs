@@ -66,4 +66,16 @@ extern "C" {
             w: CLPK_doublereal, z: CLPK_doublereal, ldz: CLPK_integer,
             work: CLPK_doublereal,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn chbev_(jobz: c_char, uplo: c_char, n: *const CLPK_integer,
+            kd: CLPK_integer, ab: CLPK_complex, ldab: CLPK_integer,
+            w: CLPK_real, z: CLPK_complex, ldz: CLPK_integer,
+            work: CLPK_complex, rwork: CLPK_real,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zhbev_(jobz: c_char, uplo: c_char, n: *const CLPK_integer,
+            kd: CLPK_integer, ab: CLPK_doublecomplex,
+            ldab: CLPK_integer, w: CLPK_doublereal,
+            z: CLPK_doublecomplex, ldz: CLPK_integer,
+            work: CLPK_doublecomplex, rwork: CLPK_doublereal,
+            info: *mut CLPK_integer) -> c_int;
 }
