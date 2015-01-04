@@ -167,4 +167,21 @@ extern "C" {
             ldb: *const CLPK_integer, work: *mut CLPK_doublecomplex,
             lwork: *const CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn sspsv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            ap: *mut CLPK_real, ipiv: *mut CLPK_integer, b: *mut CLPK_real,
+            ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn dspsv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            ap: *mut CLPK_doublereal, ipiv: *mut CLPK_integer, b: *mut CLPK_doublereal,
+            ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn cspsv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            ap: *mut CLPK_complex, ipiv: *mut CLPK_integer, b: *mut CLPK_complex,
+            ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zspsv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            ap: *mut CLPK_doublecomplex, ipiv: *mut CLPK_integer,
+            b: *mut CLPK_doublecomplex, ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
 }

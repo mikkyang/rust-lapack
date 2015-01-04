@@ -55,6 +55,10 @@ pub trait Hesv {
     fn hesv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>);
 }
 
+pub trait Spsv {
+    fn spsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>);
+}
+
 macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     impl Gesv for $t {
         fn gesv(a: &mut Matrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<CLPK_integer>) {
@@ -148,6 +152,21 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                     p.as_mut_ptr().as_c_ptr(),
                     b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
                     work.as_mut_slice().as_mut_ptr().as_c_ptr(), a.cols().as_const(),
+                    &mut info as *mut CLPK_integer);
+            }
+        }
+    }
+
+    impl Spsv for $t {
+        fn spsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>) {
+            unsafe {
+                let mut info: CLPK_integer = 0;
+
+                prefix!($t, spsv_)(a.symmetry().as_i8().as_const(),
+                    a.cols().as_const(), b.cols().as_const(),
+                    a.as_mut_ptr().as_c_ptr(),
+                    p.as_mut_ptr().as_c_ptr(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
                     &mut info as *mut CLPK_integer);
             }
         }
