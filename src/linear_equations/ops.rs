@@ -43,6 +43,10 @@ pub trait Pbsv<M> where M: SymmetricMatrix<Self> + BandMatrix<Self> {
     fn pbsv(a: &mut M, b: &mut Matrix<Self>);
 }
 
+pub trait Ptsv<M> where M: TridiagonalMatrix<Self> + SymmetricMatrix<Self> {
+    fn ptsv(a: &mut M, b: &mut Matrix<Self>);
+}
+
 macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     impl Gesv for $t {
         fn gesv(a: &mut Matrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<CLPK_integer>) {

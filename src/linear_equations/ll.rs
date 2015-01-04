@@ -118,4 +118,19 @@ extern "C" {
             ldab: *const CLPK_integer, b: *mut CLPK_doublecomplex,
             ldb: *const CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn sptsv_(n: *const CLPK_integer, nrhs: *const CLPK_integer, d: *mut CLPK_real,
+            e: *mut CLPK_real, b: *mut CLPK_real, ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn dptsv_(n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            d: *mut CLPK_doublereal, e: *mut CLPK_doublereal,
+            b: *mut CLPK_doublereal, ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn cptsv_(n: *const CLPK_integer, nrhs: *const CLPK_integer, d: *mut CLPK_real,
+            e: *mut CLPK_complex, b: *mut CLPK_complex, ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zptsv_(n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            d: *mut CLPK_doublereal, e: *mut CLPK_doublecomplex,
+            b: *mut CLPK_doublecomplex, ldb: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
 }
