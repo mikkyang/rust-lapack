@@ -45,4 +45,14 @@ extern "C" {
             z: CLPK_doublereal, ldz: CLPK_integer,
             work: CLPK_doublereal,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn chpev_(jobz: c_char, uplo: c_char, n: *const CLPK_integer,
+            ap: CLPK_complex, w: CLPK_real, z: CLPK_complex,
+            ldz: CLPK_integer, work: CLPK_complex, rwork: CLPK_real,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zhpev_(jobz: c_char, uplo: c_char, n: *const CLPK_integer,
+            ap: CLPK_doublecomplex, w: CLPK_doublereal,
+            z: CLPK_doublecomplex, ldz: CLPK_integer,
+            work: CLPK_doublecomplex, rwork: CLPK_doublereal,
+            info: *mut CLPK_integer) -> c_int;
 }
