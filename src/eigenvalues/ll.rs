@@ -55,4 +55,15 @@ extern "C" {
             z: CLPK_doublecomplex, ldz: CLPK_integer,
             work: CLPK_doublecomplex, rwork: CLPK_doublereal,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn ssbev_(jobz: c_char, uplo: c_char, n: *const CLPK_integer,
+            kd: CLPK_integer, ab: CLPK_real, ldab: CLPK_integer,
+            w: CLPK_real, z: CLPK_real, ldz: CLPK_integer,
+            work: CLPK_real,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn dsbev_(jobz: c_char, uplo: c_char, n: *const CLPK_integer,
+            kd: CLPK_integer, ab: CLPK_doublereal, ldab: CLPK_integer,
+            w: CLPK_doublereal, z: CLPK_doublereal, ldz: CLPK_integer,
+            work: CLPK_doublereal,
+            info: *mut CLPK_integer) -> c_int;
 }
