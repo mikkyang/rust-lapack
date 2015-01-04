@@ -36,4 +36,28 @@ extern "C" {
             lda: *const CLPK_integer, b: *mut CLPK_doublecomplex, ldb: *const CLPK_integer,
             work: CLPK_doublecomplex, lwork: CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn sgglse_(m: CLPK_integer, n: *const CLPK_integer, p: CLPK_integer,
+            a: *mut CLPK_real, lda: *const CLPK_integer, b: *mut CLPK_real,
+            ldb: *const CLPK_integer, c: CLPK_real, d: CLPK_real,
+            x: CLPK_real, work: CLPK_real, lwork: CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn dgglse_(m: CLPK_integer, n: *const CLPK_integer, p: CLPK_integer,
+            a: *mut CLPK_doublereal, lda: *const CLPK_integer, b: *mut CLPK_doublereal,
+            ldb: *const CLPK_integer, c: CLPK_doublereal,
+            d: CLPK_doublereal, x: CLPK_doublereal,
+            work: CLPK_doublereal, lwork: CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn cgglse_(m: CLPK_integer, n: *const CLPK_integer, p: CLPK_integer,
+            a: *mut CLPK_complex, lda: *const CLPK_integer, b: *mut CLPK_complex,
+            ldb: *const CLPK_integer, c: CLPK_complex, d: CLPK_complex,
+            x: CLPK_complex, work: CLPK_complex, lwork: CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zgglse_(m: CLPK_integer, n: *const CLPK_integer, p: CLPK_integer,
+            a: *mut CLPK_doublecomplex, lda: *const CLPK_integer,
+            b: *mut CLPK_doublecomplex, ldb: *const CLPK_integer,
+            c: CLPK_doublecomplex, d: CLPK_doublecomplex,
+            x: CLPK_doublecomplex, work: CLPK_doublecomplex,
+            lwork: CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
 }
