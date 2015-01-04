@@ -87,4 +87,29 @@ extern "C" {
             e: CLPK_doublereal, z: CLPK_doublereal, ldz: CLPK_integer,
             work: CLPK_doublereal,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn sgeev_(jobvl: c_char, jobvr: c_char, n: *const CLPK_integer, a: *mut CLPK_real,
+            lda: *const CLPK_integer, wr: CLPK_real, wi: CLPK_real,
+            vl: CLPK_real, ldvl: CLPK_integer, vr: CLPK_real,
+            ldvr: CLPK_integer, work: CLPK_real, lwork: CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn dgeev_(jobvl: c_char, jobvr: c_char, n: *const CLPK_integer,
+            a: *mut CLPK_doublereal, lda: *const CLPK_integer, wr: CLPK_doublereal,
+            wi: CLPK_doublereal, vl: CLPK_doublereal,
+            ldvl: CLPK_integer, vr: CLPK_doublereal, ldvr: CLPK_integer,
+            work: CLPK_doublereal, lwork: CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn cgeev_(jobvl: c_char, jobvr: c_char, n: *const CLPK_integer,
+            a: *mut CLPK_complex, lda: *const CLPK_integer, w: CLPK_complex,
+            vl: CLPK_complex, ldvl: CLPK_integer, vr: CLPK_complex,
+            ldvr: CLPK_integer, work: CLPK_complex, lwork: CLPK_integer,
+            rwork: CLPK_real,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zgeev_(jobvl: c_char, jobvr: c_char, n: *const CLPK_integer,
+            a: *mut CLPK_doublecomplex, lda: *const CLPK_integer,
+            w: CLPK_doublecomplex, vl: CLPK_doublecomplex,
+            ldvl: CLPK_integer, vr: CLPK_doublecomplex,
+            ldvr: CLPK_integer, work: CLPK_doublecomplex,
+            lwork: CLPK_integer, rwork: CLPK_doublereal,
+            info: *mut CLPK_integer) -> c_int;
 }
