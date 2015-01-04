@@ -51,6 +51,10 @@ pub trait Sysv {
     fn sysv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>);
 }
 
+pub trait Hesv {
+    fn hesv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>);
+}
+
 macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     impl Gesv for $t {
         fn gesv(a: &mut Matrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<CLPK_integer>) {
@@ -150,7 +154,29 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     }
 )+));
 
+macro_rules! complex_lin_eq_impl(($($t: ident), +) => ($(
+    impl Hesv for $t {
+        fn hesv(a: &mut SymmetricMatrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<CLPK_integer>) {
+            unsafe {
+                let mut info: CLPK_integer = 0;
+
+                let n = a.cols() as uint;
+                let mut work: Vec<$t> = Vec::with_capacity(n);
+
+                prefix!($t, hesv_)(a.symmetry().as_i8().as_const(),
+                    a.cols().as_const(), b.cols().as_const(),
+                    a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
+                    p.as_mut_ptr().as_c_ptr(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                    work.as_mut_slice().as_mut_ptr().as_c_ptr(), a.cols().as_const(),
+                    &mut info as *mut CLPK_integer);
+            }
+        }
+    }
+)+));
+
 lin_eq_impl!(f32, f64, Complex32, Complex64);
+complex_lin_eq_impl!(Complex32, Complex64);
 
 #[cfg(test)]
 mod gesv_tests {

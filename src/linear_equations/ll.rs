@@ -155,4 +155,16 @@ extern "C" {
             ldb: *const CLPK_integer, work: *mut CLPK_doublecomplex,
             lwork: *const CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn chesv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            a: *mut CLPK_complex, lda: *const CLPK_integer, ipiv: *mut CLPK_integer,
+            b: *mut CLPK_complex, ldb: *const CLPK_integer, work: *mut CLPK_complex,
+            lwork: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zhesv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            a: *mut CLPK_doublecomplex, lda: *const CLPK_integer,
+            ipiv: *mut CLPK_integer, b: *mut CLPK_doublecomplex,
+            ldb: *const CLPK_integer, work: *mut CLPK_doublecomplex,
+            lwork: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
 }
