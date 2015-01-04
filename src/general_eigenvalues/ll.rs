@@ -16,4 +16,14 @@ use types::{
 
 #[link(name = "lapack")]
 extern "C" {
+    pub fn ssygv_(itype: CLPK_integer, jobz: c_char, uplo: c_char,
+            n: *const CLPK_integer, a: *mut CLPK_real, lda: *const CLPK_integer,
+            b: *mut CLPK_real, ldb: *const CLPK_integer, w: CLPK_real,
+            work: CLPK_real, lwork: CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn dsygv_(itype: CLPK_integer, jobz: c_char, uplo: c_char,
+            n: *const CLPK_integer, a: *mut CLPK_doublereal, lda: *const CLPK_integer,
+            b: *mut CLPK_doublereal, ldb: *const CLPK_integer, w: CLPK_doublereal,
+            work: CLPK_doublereal, lwork: CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
 }
