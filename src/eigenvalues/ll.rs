@@ -78,4 +78,13 @@ extern "C" {
             z: CLPK_doublecomplex, ldz: CLPK_integer,
             work: CLPK_doublecomplex, rwork: CLPK_doublereal,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn sstev_(jobz: c_char, n: *const CLPK_integer, d: CLPK_real,
+            e: CLPK_real, z: CLPK_real, ldz: CLPK_integer,
+            work: CLPK_real,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn dstev_(jobz: c_char, n: *const CLPK_integer, d: CLPK_doublereal,
+            e: CLPK_doublereal, z: CLPK_doublereal, ldz: CLPK_integer,
+            work: CLPK_doublereal,
+            info: *mut CLPK_integer) -> c_int;
 }
