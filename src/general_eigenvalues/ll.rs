@@ -26,4 +26,16 @@ extern "C" {
             b: *mut CLPK_doublereal, ldb: *const CLPK_integer, w: CLPK_doublereal,
             work: CLPK_doublereal, lwork: CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn chegv_(itype: CLPK_integer, jobz: c_char, uplo: c_char,
+            n: *const CLPK_integer, a: *mut CLPK_complex, lda: *const CLPK_integer,
+            b: *mut CLPK_complex, ldb: *const CLPK_integer, w: CLPK_real,
+            work: CLPK_complex, lwork: CLPK_integer, rwork: CLPK_real,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zhegv_(itype: CLPK_integer, jobz: c_char, uplo: c_char,
+            n: *const CLPK_integer, a: *mut CLPK_doublecomplex, lda: *const CLPK_integer,
+            b: *mut CLPK_doublecomplex, ldb: *const CLPK_integer,
+            w: CLPK_doublereal, work: CLPK_doublecomplex,
+            lwork: CLPK_integer, rwork: CLPK_doublereal,
+            info: *mut CLPK_integer) -> c_int;
 }
