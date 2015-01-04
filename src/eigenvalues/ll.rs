@@ -35,4 +35,14 @@ extern "C" {
             w: CLPK_doublereal, work: CLPK_doublecomplex,
             lwork: CLPK_integer, rwork: CLPK_doublereal,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn sspev_(jobz: c_char, uplo: c_char, n: *const CLPK_integer, ap: CLPK_real,
+            w: CLPK_real, z: CLPK_real, ldz: CLPK_integer,
+            work: CLPK_real,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn dspev_(jobz: c_char, uplo: c_char, n: *const CLPK_integer,
+            ap: CLPK_doublereal, w: CLPK_doublereal,
+            z: CLPK_doublereal, ldz: CLPK_integer,
+            work: CLPK_doublereal,
+            info: *mut CLPK_integer) -> c_int;
 }
