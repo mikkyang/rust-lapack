@@ -133,4 +133,26 @@ extern "C" {
             d: *mut CLPK_doublereal, e: *mut CLPK_doublecomplex,
             b: *mut CLPK_doublecomplex, ldb: *const CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
+
+    pub fn ssysv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            a: *mut CLPK_real, lda: *const CLPK_integer, ipiv: *mut CLPK_integer,
+            b: *mut CLPK_real, ldb: *const CLPK_integer, work: *mut CLPK_real,
+            lwork: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn dsysv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            a: *mut CLPK_doublereal, lda: *const CLPK_integer, ipiv: *mut CLPK_integer,
+            b: *mut CLPK_doublereal, ldb: *const CLPK_integer,
+            work: *mut CLPK_doublereal, lwork: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn csysv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            a: *mut CLPK_complex, lda: *const CLPK_integer, ipiv: *mut CLPK_integer,
+            b: *mut CLPK_complex, ldb: *const CLPK_integer, work: *mut CLPK_complex,
+            lwork: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
+    pub fn zsysv_(uplo: *const c_char, n: *const CLPK_integer, nrhs: *const CLPK_integer,
+            a: *mut CLPK_doublecomplex, lda: *const CLPK_integer,
+            ipiv: *mut CLPK_integer, b: *mut CLPK_doublecomplex,
+            ldb: *const CLPK_integer, work: *mut CLPK_doublecomplex,
+            lwork: *const CLPK_integer,
+            info: *mut CLPK_integer) -> c_int;
 }

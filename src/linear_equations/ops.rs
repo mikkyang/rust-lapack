@@ -47,6 +47,10 @@ pub trait Ptsv<M> where M: TridiagonalMatrix<Self> + SymmetricMatrix<Self> {
     fn ptsv(a: &mut M, b: &mut Matrix<Self>);
 }
 
+pub trait Sysv {
+    fn sysv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>);
+}
+
 macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     impl Gesv for $t {
         fn gesv(a: &mut Matrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<CLPK_integer>) {
@@ -121,6 +125,25 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                     b.cols().as_const(),
                     a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
                     b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                    &mut info as *mut CLPK_integer);
+            }
+        }
+    }
+
+    impl Sysv for $t {
+        fn sysv(a: &mut SymmetricMatrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<CLPK_integer>) {
+            unsafe {
+                let mut info: CLPK_integer = 0;
+
+                let n = a.cols() as uint;
+                let mut work: Vec<$t> = Vec::with_capacity(n);
+
+                prefix!($t, sysv_)(a.symmetry().as_i8().as_const(),
+                    a.cols().as_const(), b.cols().as_const(),
+                    a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
+                    p.as_mut_ptr().as_c_ptr(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                    work.as_mut_slice().as_mut_ptr().as_c_ptr(), a.cols().as_const(),
                     &mut info as *mut CLPK_integer);
             }
         }
