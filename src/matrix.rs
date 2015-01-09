@@ -5,11 +5,13 @@
 use types::{
     CLPK_integer,
     Symmetry,
+    Transpose,
 };
 
 pub trait Matrix<T> {
     fn rows(&self) -> CLPK_integer;
     fn cols(&self) -> CLPK_integer;
+    fn transpose(&self) -> Transpose { Transpose::None }
     fn as_ptr(&self) -> *const T;
     fn as_mut_ptr(&mut self) -> *mut T;
 }
