@@ -94,6 +94,21 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
         }
     }
 
+    impl Gtsv for $t {
+        fn gtsv(a: &mut TridiagonalMatrix<Self>, b: &mut Matrix<Self>) {
+            unsafe {
+                let mut info: CLPK_integer = 0;
+
+                let (sup, diag, sub) = a.as_mut_ptrs();
+
+                prefix!($t, gtsv_)(a.cols().as_const(), b.cols().as_const(),
+                    sup.as_c_ptr(), diag.as_c_ptr(), sub.as_c_ptr(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                    &mut info as *mut CLPK_integer);
+            }
+        }
+    }
+
     impl Posv for $t {
         fn posv(a: &mut SymmetricMatrix<$t>, b: &mut Matrix<$t>) {
             unsafe {
