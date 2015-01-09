@@ -32,3 +32,17 @@ impl Symmetry {
         }
     }
 }
+
+pub enum Transpose {
+    None,
+    Conjugate,
+}
+
+impl Transpose {
+    pub fn as_i8(self) -> i8 {
+        match self {
+            Transpose::None => 78,
+            Transpose::Conjugate => 67,
+        }
+    }
+}
