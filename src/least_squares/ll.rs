@@ -16,25 +16,25 @@ use types::{
 
 #[link(name = "lapack")]
 extern "C" {
-    pub fn sgels_(trans: c_char, m: CLPK_integer, n: *const CLPK_integer,
+    pub fn sgels_(trans: *const c_char, m: *const CLPK_integer, n: *const CLPK_integer,
             nrhs: *const CLPK_integer, a: *mut CLPK_real, lda: *const CLPK_integer,
-            b: *mut CLPK_real, ldb: *const CLPK_integer, work: CLPK_real,
-            lwork: CLPK_integer,
+            b: *mut CLPK_real, ldb: *const CLPK_integer, work: *mut CLPK_real,
+            lwork: *const CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
-    pub fn dgels_(trans: c_char, m: CLPK_integer, n: *const CLPK_integer,
+    pub fn dgels_(trans: *const c_char, m: *const CLPK_integer, n: *const CLPK_integer,
             nrhs: *const CLPK_integer, a: *mut CLPK_doublereal, lda: *const CLPK_integer,
             b: *mut CLPK_doublereal, ldb: *const CLPK_integer,
-            work: CLPK_doublereal, lwork: CLPK_integer,
+            work: *mut CLPK_doublereal, lwork: *const CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
-    pub fn cgels_(trans: c_char, m: CLPK_integer, n: *const CLPK_integer,
+    pub fn cgels_(trans: *const c_char, m: *const CLPK_integer, n: *const CLPK_integer,
             nrhs: *const CLPK_integer, a: *mut CLPK_complex, lda: *const CLPK_integer,
-            b: *mut CLPK_complex, ldb: *const CLPK_integer, work: CLPK_complex,
-            lwork: CLPK_integer,
+            b: *mut CLPK_complex, ldb: *const CLPK_integer, work: *mut CLPK_complex,
+            lwork: *const CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
-    pub fn zgels_(trans: c_char, m: CLPK_integer, n: *const CLPK_integer,
+    pub fn zgels_(trans: *const c_char, m: *const CLPK_integer, n: *const CLPK_integer,
             nrhs: *const CLPK_integer, a: *mut CLPK_doublecomplex,
             lda: *const CLPK_integer, b: *mut CLPK_doublecomplex, ldb: *const CLPK_integer,
-            work: CLPK_doublecomplex, lwork: CLPK_integer,
+            work: *mut CLPK_doublecomplex, lwork: *const CLPK_integer,
             info: *mut CLPK_integer) -> c_int;
 
     pub fn sgglse_(m: CLPK_integer, n: *const CLPK_integer, p: CLPK_integer,
