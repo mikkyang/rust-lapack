@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 #![feature(concat_idents)]
 #![feature(globs)]
+#![feature(libc)]
 #![feature(macro_rules)]
 
 extern crate libc;
