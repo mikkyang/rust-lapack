@@ -10,7 +10,7 @@ extern crate libc;
 extern crate num;
 
 mod pointer;
-#[macro_escape]
+#[macro_use]
 mod prefix;
 mod scalar;
 mod types;
