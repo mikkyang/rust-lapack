@@ -37,23 +37,19 @@ pub mod tests {
 
     impl<T> Matrix<T> for (CLPK_integer, CLPK_integer, Vec<T>) {
         fn rows(&self) -> CLPK_integer {
-            let &(rows, _, _) = self;
-            rows
+            self.0
         }
 
         fn cols(&self) -> CLPK_integer {
-            let &(_, cols, _) = self;
-            cols
+            self.1
         }
 
         fn as_ptr(&self) -> *const T {
-            let &(_, _, ref v) = self;
-            v.as_slice().as_ptr()
+            self.2[..].as_ptr()
         }
 
         fn as_mut_ptr(&mut self) -> *mut T {
-            let &(_, _, ref mut v) = self;
-            v.as_mut_slice().as_mut_ptr()
+            (&mut self.2[..]).as_mut_ptr()
         }
     }
 }

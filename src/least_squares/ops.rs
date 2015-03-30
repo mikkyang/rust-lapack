@@ -39,7 +39,7 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                     nrhs.as_const(),
                     a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
                     b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
-                    work.as_mut_slice().as_mut_ptr().as_c_ptr(), work_len.as_const(),
+                    (&mut work[..]).as_mut_ptr().as_c_ptr(), work_len.as_const(),
                     &mut info as *mut CLPK_integer);
             }
         }

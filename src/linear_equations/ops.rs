@@ -170,7 +170,7 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                     a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
                     p.as_mut_ptr().as_c_ptr(),
                     b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
-                    work.as_mut_slice().as_mut_ptr().as_c_ptr(), a.cols().as_const(),
+                    (&mut work[..]).as_mut_ptr().as_c_ptr(), a.cols().as_const(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -206,7 +206,7 @@ macro_rules! complex_lin_eq_impl(($($t: ident), +) => ($(
                     a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
                     p.as_mut_ptr().as_c_ptr(),
                     b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
-                    work.as_mut_slice().as_mut_ptr().as_c_ptr(), a.cols().as_const(),
+                    (&mut work[..]).as_mut_ptr().as_c_ptr(), a.cols().as_const(),
                     &mut info as *mut CLPK_integer);
             }
         }
