@@ -31,8 +31,8 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                 let nrhs = b.cols();
                 let mn = cmp::min(m, n);
                 let work_len = mn + cmp::max(mn, nrhs);
-                let mut work: Vec<$t> = Vec::with_capacity(work_len as uint);
-                work.set_len(work_len as uint);
+                let mut work: Vec<$t> = Vec::with_capacity(work_len as usize);
+                work.set_len(work_len as usize);
 
                 prefix!($t, gels_)(a.transpose().as_i8().as_const(),
                     m.as_const(), n.as_const(),

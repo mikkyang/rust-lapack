@@ -162,7 +162,7 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
             unsafe {
                 let mut info: CLPK_integer = 0;
 
-                let n = a.cols() as uint;
+                let n = a.cols() as usize;
                 let mut work: Vec<$t> = Vec::with_capacity(n);
 
                 prefix!($t, sysv_)(a.symmetry().as_i8().as_const(),
@@ -198,7 +198,7 @@ macro_rules! complex_lin_eq_impl(($($t: ident), +) => ($(
             unsafe {
                 let mut info: CLPK_integer = 0;
 
-                let n = a.cols() as uint;
+                let n = a.cols() as usize;
                 let mut work: Vec<$t> = Vec::with_capacity(n);
 
                 prefix!($t, hesv_)(a.symmetry().as_i8().as_const(),
