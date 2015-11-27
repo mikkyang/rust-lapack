@@ -7,6 +7,11 @@
 extern crate libc;
 extern crate num;
 
+pub use eigenvalues::ops::*;
+pub use general_eigenvalues::ops::*;
+pub use least_squares::ops::*;
+pub use linear_equations::ops::*;
+
 mod pointer;
 #[macro_use]
 mod prefix;
