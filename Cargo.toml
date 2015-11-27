@@ -1,8 +1,15 @@
 [package]
 
-name = "lapack"
+name = "rlapack"
 version = "0.0.1"
 authors = ["Michael Yang <mikkyangg@gmail.com>"]
+description = "LAPACK bindings and wrappers"
+documentation = "http://mikkyang.github.io/rust-lapack/doc/rlapack/index.html"
+homepage = "http://github.com/mikkyang/rust-lapack"
+repository = "http://github.com/mikkyang/rust-lapack"
+readme = "README.md"
+keywords = ["LAPACK"]
+license = "MIT"
 
 [dependencies]
 num = "0.1"
