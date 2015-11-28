@@ -4,6 +4,7 @@
 
 use libc::c_int;
 use types::{
+    Layout,
     Symmetry,
     Transpose,
 };
@@ -11,6 +12,7 @@ use types::{
 pub trait Matrix<T> {
     fn rows(&self) -> c_int;
     fn cols(&self) -> c_int;
+    fn layout(&self) -> Layout { Layout::RowMajor }
     fn transpose(&self) -> Transpose { Transpose::None }
     fn as_ptr(&self) -> *const T;
     fn as_mut_ptr(&mut self) -> *mut T;

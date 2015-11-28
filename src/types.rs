@@ -2,6 +2,11 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+pub enum Layout {
+    RowMajor,
+    ColMajor,
+}
+
 pub enum Symmetry {
     Upper,
     Lower,
