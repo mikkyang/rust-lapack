@@ -10,7 +10,6 @@ use ll::*;
 use matrix::{
     Matrix,
 };
-use pointer::CPtr;
 use scalar::Scalar;
 use types::{
     CLPK_integer,
@@ -37,9 +36,9 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                 prefix!($t, gels_)(a.transpose().as_i8().as_mut(),
                     m.as_mut(), n.as_mut(),
                     nrhs.as_mut(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
-                    (&mut work[..]).as_mut_ptr().as_c_ptr(), work_len.as_mut(),
+                    a.as_mut_ptr(), a.rows().as_mut(),
+                    b.as_mut_ptr(), b.rows().as_mut(),
+                    (&mut work[..]).as_mut_ptr(), work_len.as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }

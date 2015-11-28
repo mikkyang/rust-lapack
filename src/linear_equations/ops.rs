@@ -12,7 +12,6 @@ use matrix::{
     SymmetricMatrix,
     TridiagonalMatrix,
 };
-use pointer::CPtr;
 use scalar::Scalar;
 use types::{
     CLPK_integer,
@@ -70,9 +69,9 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                 let mut info: CLPK_integer = 0;
 
                 prefix!($t, gesv_)(a.cols().as_mut(), b.cols().as_mut(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
-                    p.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
+                    a.as_mut_ptr(), a.rows().as_mut(),
+                    p.as_mut_ptr(),
+                    b.as_mut_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -86,9 +85,9 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                 prefix!($t, gbsv_)(a.cols().as_mut(),
                     a.sub_diagonals().as_mut(), a.sup_diagonals().as_mut(),
                     b.cols().as_mut(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
-                    p.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
+                    a.as_mut_ptr(), a.rows().as_mut(),
+                    p.as_mut_ptr(),
+                    b.as_mut_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -102,8 +101,8 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                 let (sup, diag, sub) = a.as_mut_ptrs();
 
                 prefix!($t, gtsv_)(a.cols().as_mut(), b.cols().as_mut(),
-                    sup.as_c_ptr(), diag.as_c_ptr(), sub.as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
+                    sup, diag, sub,
+                    b.as_mut_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -116,8 +115,8 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
 
                 prefix!($t, posv_)(a.symmetry().as_i8().as_mut(),
                     a.cols().as_mut(), b.cols().as_mut(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
+                    a.as_mut_ptr(), a.rows().as_mut(),
+                    b.as_mut_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -130,8 +129,8 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
 
                 prefix!($t, ppsv_)(a.symmetry().as_i8().as_mut(),
                     a.cols().as_mut(), b.cols().as_mut(),
-                    a.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
+                    a.as_mut_ptr(),
+                    b.as_mut_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -150,8 +149,8 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                 prefix!($t, pbsv_)(a.symmetry().as_i8().as_mut(),
                     a.cols().as_mut(), diag.as_mut(),
                     b.cols().as_mut(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
+                    a.as_mut_ptr(), a.rows().as_mut(),
+                    b.as_mut_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -167,10 +166,10 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
 
                 prefix!($t, sysv_)(a.symmetry().as_i8().as_mut(),
                     a.cols().as_mut(), b.cols().as_mut(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
-                    p.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
-                    (&mut work[..]).as_mut_ptr().as_c_ptr(), a.cols().as_mut(),
+                    a.as_mut_ptr(), a.rows().as_mut(),
+                    p.as_mut_ptr(),
+                    b.as_mut_ptr(), b.rows().as_mut(),
+                    (&mut work[..]).as_mut_ptr(), a.cols().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -183,9 +182,9 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
 
                 prefix!($t, spsv_)(a.symmetry().as_i8().as_mut(),
                     a.cols().as_mut(), b.cols().as_mut(),
-                    a.as_mut_ptr().as_c_ptr(),
-                    p.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
+                    a.as_mut_ptr(),
+                    p.as_mut_ptr(),
+                    b.as_mut_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -203,10 +202,10 @@ macro_rules! complex_lin_eq_impl(($($t: ident), +) => ($(
 
                 prefix!($t, hesv_)(a.symmetry().as_i8().as_mut(),
                     a.cols().as_mut(), b.cols().as_mut(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
-                    p.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
-                    (&mut work[..]).as_mut_ptr().as_c_ptr(), a.cols().as_mut(),
+                    a.as_mut_ptr(), a.rows().as_mut(),
+                    p.as_mut_ptr(),
+                    b.as_mut_ptr(), b.rows().as_mut(),
+                    (&mut work[..]).as_mut_ptr(), a.cols().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -219,9 +218,9 @@ macro_rules! complex_lin_eq_impl(($($t: ident), +) => ($(
 
                 prefix!($t, hpsv_)(a.symmetry().as_i8().as_mut(),
                     a.cols().as_mut(), b.cols().as_mut(),
-                    a.as_mut_ptr().as_c_ptr(),
-                    p.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
+                    a.as_mut_ptr(),
+                    p.as_mut_ptr(),
+                    b.as_mut_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
