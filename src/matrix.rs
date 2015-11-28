@@ -2,23 +2,23 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
+use libc::c_int;
 use types::{
-    CLPK_integer,
     Symmetry,
     Transpose,
 };
 
 pub trait Matrix<T> {
-    fn rows(&self) -> CLPK_integer;
-    fn cols(&self) -> CLPK_integer;
+    fn rows(&self) -> c_int;
+    fn cols(&self) -> c_int;
     fn transpose(&self) -> Transpose { Transpose::None }
     fn as_ptr(&self) -> *const T;
     fn as_mut_ptr(&mut self) -> *mut T;
 }
 
 pub trait BandMatrix<T>: Matrix<T> {
-    fn sub_diagonals(&self) -> CLPK_integer;
-    fn sup_diagonals(&self) -> CLPK_integer;
+    fn sub_diagonals(&self) -> c_int;
+    fn sup_diagonals(&self) -> c_int;
 }
 
 pub trait TridiagonalMatrix<T>: Matrix<T> {
@@ -32,15 +32,15 @@ pub trait SymmetricMatrix<T>: Matrix<T> {
 
 #[cfg(test)]
 pub mod tests {
+    use libc::c_int;
     use matrix::Matrix;
-    use types::CLPK_integer;
 
-    impl<T> Matrix<T> for (CLPK_integer, CLPK_integer, Vec<T>) {
-        fn rows(&self) -> CLPK_integer {
+    impl<T> Matrix<T> for (c_int, c_int, Vec<T>) {
+        fn rows(&self) -> c_int {
             self.0
         }
 
-        fn cols(&self) -> CLPK_integer {
+        fn cols(&self) -> c_int {
             self.1
         }
 

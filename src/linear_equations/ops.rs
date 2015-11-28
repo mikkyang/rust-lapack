@@ -5,6 +5,7 @@ use num::complex::{
     Complex32,
     Complex64,
 };
+use libc::c_int;
 use ll::*;
 use matrix::{
     Matrix,
@@ -13,17 +14,14 @@ use matrix::{
     TridiagonalMatrix,
 };
 use scalar::Scalar;
-use types::{
-    CLPK_integer,
-    Symmetry,
-};
+use types::Symmetry;
 
 pub trait Gesv {
-    fn gesv(a: &mut Matrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>);
+    fn gesv(a: &mut Matrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<c_int>);
 }
 
 pub trait Gbsv {
-    fn gbsv(a: &mut BandMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>);
+    fn gbsv(a: &mut BandMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<c_int>);
 }
 
 pub trait Gtsv {
@@ -47,40 +45,40 @@ pub trait Ptsv<M> where M: TridiagonalMatrix<Self> + SymmetricMatrix<Self> {
 }
 
 pub trait Sysv {
-    fn sysv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>);
+    fn sysv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<c_int>);
 }
 
 pub trait Hesv {
-    fn hesv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>);
+    fn hesv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<c_int>);
 }
 
 pub trait Spsv {
-    fn spsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>);
+    fn spsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<c_int>);
 }
 
 pub trait Hpsv {
-    fn hpsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>);
+    fn hpsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<c_int>);
 }
 
 macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     impl Gesv for $t {
-        fn gesv(a: &mut Matrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<CLPK_integer>) {
+        fn gesv(a: &mut Matrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<c_int>) {
             unsafe {
-                let mut info: CLPK_integer = 0;
+                let mut info: c_int = 0;
 
                 prefix!($t, gesv_)(a.cols().as_mut(), b.cols().as_mut(),
                     a.as_mut_ptr(), a.rows().as_mut(),
                     p.as_mut_ptr(),
                     b.as_mut_ptr(), b.rows().as_mut(),
-                    &mut info as *mut CLPK_integer);
+                    &mut info as *mut c_int);
             }
         }
     }
 
     impl Gbsv for $t {
-        fn gbsv(a: &mut BandMatrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<CLPK_integer>) {
+        fn gbsv(a: &mut BandMatrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<c_int>) {
             unsafe {
-                let mut info: CLPK_integer = 0;
+                let mut info: c_int = 0;
 
                 prefix!($t, gbsv_)(a.cols().as_mut(),
                     a.sub_diagonals().as_mut(), a.sup_diagonals().as_mut(),
@@ -88,7 +86,7 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                     a.as_mut_ptr(), a.rows().as_mut(),
                     p.as_mut_ptr(),
                     b.as_mut_ptr(), b.rows().as_mut(),
-                    &mut info as *mut CLPK_integer);
+                    &mut info as *mut c_int);
             }
         }
     }
@@ -96,14 +94,14 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     impl Gtsv for $t {
         fn gtsv(a: &mut TridiagonalMatrix<Self>, b: &mut Matrix<Self>) {
             unsafe {
-                let mut info: CLPK_integer = 0;
+                let mut info: c_int = 0;
 
                 let (sup, diag, sub) = a.as_mut_ptrs();
 
                 prefix!($t, gtsv_)(a.cols().as_mut(), b.cols().as_mut(),
                     sup, diag, sub,
                     b.as_mut_ptr(), b.rows().as_mut(),
-                    &mut info as *mut CLPK_integer);
+                    &mut info as *mut c_int);
             }
         }
     }
@@ -111,13 +109,13 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     impl Posv for $t {
         fn posv(a: &mut SymmetricMatrix<$t>, b: &mut Matrix<$t>) {
             unsafe {
-                let mut info: CLPK_integer = 0;
+                let mut info: c_int = 0;
 
                 prefix!($t, posv_)(a.symmetry().as_i8().as_mut(),
                     a.cols().as_mut(), b.cols().as_mut(),
                     a.as_mut_ptr(), a.rows().as_mut(),
                     b.as_mut_ptr(), b.rows().as_mut(),
-                    &mut info as *mut CLPK_integer);
+                    &mut info as *mut c_int);
             }
         }
     }
@@ -125,13 +123,13 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     impl Ppsv for $t {
         fn ppsv(a: &mut SymmetricMatrix<$t>, b: &mut Matrix<$t>) {
             unsafe {
-                let mut info: CLPK_integer = 0;
+                let mut info: c_int = 0;
 
                 prefix!($t, ppsv_)(a.symmetry().as_i8().as_mut(),
                     a.cols().as_mut(), b.cols().as_mut(),
                     a.as_mut_ptr(),
                     b.as_mut_ptr(), b.rows().as_mut(),
-                    &mut info as *mut CLPK_integer);
+                    &mut info as *mut c_int);
             }
         }
     }
@@ -139,7 +137,7 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     impl<M> Pbsv<M> for $t where M: SymmetricMatrix<$t> + BandMatrix<$t> {
         fn pbsv(a: &mut M, b: &mut Matrix<$t>) {
             unsafe {
-                let mut info: CLPK_integer = 0;
+                let mut info: c_int = 0;
 
                 let diag = match a.symmetry() {
                     Symmetry::Upper => a.sup_diagonals(),
@@ -151,15 +149,15 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                     b.cols().as_mut(),
                     a.as_mut_ptr(), a.rows().as_mut(),
                     b.as_mut_ptr(), b.rows().as_mut(),
-                    &mut info as *mut CLPK_integer);
+                    &mut info as *mut c_int);
             }
         }
     }
 
     impl Sysv for $t {
-        fn sysv(a: &mut SymmetricMatrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<CLPK_integer>) {
+        fn sysv(a: &mut SymmetricMatrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<c_int>) {
             unsafe {
-                let mut info: CLPK_integer = 0;
+                let mut info: c_int = 0;
 
                 let n = a.cols() as usize;
                 let mut work: Vec<$t> = Vec::with_capacity(n);
@@ -170,22 +168,22 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                     p.as_mut_ptr(),
                     b.as_mut_ptr(), b.rows().as_mut(),
                     (&mut work[..]).as_mut_ptr(), a.cols().as_mut(),
-                    &mut info as *mut CLPK_integer);
+                    &mut info as *mut c_int);
             }
         }
     }
 
     impl Spsv for $t {
-        fn spsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>) {
+        fn spsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<c_int>) {
             unsafe {
-                let mut info: CLPK_integer = 0;
+                let mut info: c_int = 0;
 
                 prefix!($t, spsv_)(a.symmetry().as_i8().as_mut(),
                     a.cols().as_mut(), b.cols().as_mut(),
                     a.as_mut_ptr(),
                     p.as_mut_ptr(),
                     b.as_mut_ptr(), b.rows().as_mut(),
-                    &mut info as *mut CLPK_integer);
+                    &mut info as *mut c_int);
             }
         }
     }
@@ -193,9 +191,9 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
 
 macro_rules! complex_lin_eq_impl(($($t: ident), +) => ($(
     impl Hesv for $t {
-        fn hesv(a: &mut SymmetricMatrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<CLPK_integer>) {
+        fn hesv(a: &mut SymmetricMatrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<c_int>) {
             unsafe {
-                let mut info: CLPK_integer = 0;
+                let mut info: c_int = 0;
 
                 let n = a.cols() as usize;
                 let mut work: Vec<$t> = Vec::with_capacity(n);
@@ -206,22 +204,22 @@ macro_rules! complex_lin_eq_impl(($($t: ident), +) => ($(
                     p.as_mut_ptr(),
                     b.as_mut_ptr(), b.rows().as_mut(),
                     (&mut work[..]).as_mut_ptr(), a.cols().as_mut(),
-                    &mut info as *mut CLPK_integer);
+                    &mut info as *mut c_int);
             }
         }
     }
 
     impl Hpsv for $t {
-        fn hpsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<CLPK_integer>) {
+        fn hpsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<c_int>) {
             unsafe {
-                let mut info: CLPK_integer = 0;
+                let mut info: c_int = 0;
 
                 prefix!($t, hpsv_)(a.symmetry().as_i8().as_mut(),
                     a.cols().as_mut(), b.cols().as_mut(),
                     a.as_mut_ptr(),
                     p.as_mut_ptr(),
                     b.as_mut_ptr(), b.rows().as_mut(),
-                    &mut info as *mut CLPK_integer);
+                    &mut info as *mut c_int);
             }
         }
     }
