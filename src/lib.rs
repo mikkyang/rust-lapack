@@ -17,6 +17,7 @@ mod prefix;
 mod scalar;
 mod types;
 pub mod ll;
+pub mod error;
 pub mod matrix;
 pub mod linear_equations;
 pub mod least_squares;
