@@ -25,7 +25,7 @@ macro_rules! scalar_impl(
 
             #[inline]
             fn as_mut(self) -> *mut $t {
-                &self as *const _ as *mut $c_type
+                self as *const _ as *mut $c_type
             }
         }
 
