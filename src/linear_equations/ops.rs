@@ -5,7 +5,7 @@ use num::complex::{
     Complex32,
     Complex64,
 };
-use linear_equations::ll::*;
+use ll::*;
 use matrix::{
     Matrix,
     BandMatrix,
@@ -69,10 +69,10 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
             unsafe {
                 let mut info: CLPK_integer = 0;
 
-                prefix!($t, gesv_)(a.cols().as_const(), b.cols().as_const(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
+                prefix!($t, gesv_)(a.cols().as_mut(), b.cols().as_mut(),
+                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
                     p.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -83,12 +83,12 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
             unsafe {
                 let mut info: CLPK_integer = 0;
 
-                prefix!($t, gbsv_)(a.cols().as_const(),
-                    a.sub_diagonals().as_const(), a.sup_diagonals().as_const(),
-                    b.cols().as_const(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
+                prefix!($t, gbsv_)(a.cols().as_mut(),
+                    a.sub_diagonals().as_mut(), a.sup_diagonals().as_mut(),
+                    b.cols().as_mut(),
+                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
                     p.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -101,9 +101,9 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
 
                 let (sup, diag, sub) = a.as_mut_ptrs();
 
-                prefix!($t, gtsv_)(a.cols().as_const(), b.cols().as_const(),
+                prefix!($t, gtsv_)(a.cols().as_mut(), b.cols().as_mut(),
                     sup.as_c_ptr(), diag.as_c_ptr(), sub.as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -114,10 +114,10 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
             unsafe {
                 let mut info: CLPK_integer = 0;
 
-                prefix!($t, posv_)(a.symmetry().as_i8().as_const(),
-                    a.cols().as_const(), b.cols().as_const(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                prefix!($t, posv_)(a.symmetry().as_i8().as_mut(),
+                    a.cols().as_mut(), b.cols().as_mut(),
+                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -128,10 +128,10 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
             unsafe {
                 let mut info: CLPK_integer = 0;
 
-                prefix!($t, ppsv_)(a.symmetry().as_i8().as_const(),
-                    a.cols().as_const(), b.cols().as_const(),
+                prefix!($t, ppsv_)(a.symmetry().as_i8().as_mut(),
+                    a.cols().as_mut(), b.cols().as_mut(),
                     a.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -147,11 +147,11 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                     Symmetry::Lower => a.sub_diagonals(),
                 };
 
-                prefix!($t, pbsv_)(a.symmetry().as_i8().as_const(),
-                    a.cols().as_const(), diag.as_const(),
-                    b.cols().as_const(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                prefix!($t, pbsv_)(a.symmetry().as_i8().as_mut(),
+                    a.cols().as_mut(), diag.as_mut(),
+                    b.cols().as_mut(),
+                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -165,12 +165,12 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                 let n = a.cols() as usize;
                 let mut work: Vec<$t> = Vec::with_capacity(n);
 
-                prefix!($t, sysv_)(a.symmetry().as_i8().as_const(),
-                    a.cols().as_const(), b.cols().as_const(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
+                prefix!($t, sysv_)(a.symmetry().as_i8().as_mut(),
+                    a.cols().as_mut(), b.cols().as_mut(),
+                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
                     p.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
-                    (&mut work[..]).as_mut_ptr().as_c_ptr(), a.cols().as_const(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
+                    (&mut work[..]).as_mut_ptr().as_c_ptr(), a.cols().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -181,11 +181,11 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
             unsafe {
                 let mut info: CLPK_integer = 0;
 
-                prefix!($t, spsv_)(a.symmetry().as_i8().as_const(),
-                    a.cols().as_const(), b.cols().as_const(),
+                prefix!($t, spsv_)(a.symmetry().as_i8().as_mut(),
+                    a.cols().as_mut(), b.cols().as_mut(),
                     a.as_mut_ptr().as_c_ptr(),
                     p.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -201,12 +201,12 @@ macro_rules! complex_lin_eq_impl(($($t: ident), +) => ($(
                 let n = a.cols() as usize;
                 let mut work: Vec<$t> = Vec::with_capacity(n);
 
-                prefix!($t, hesv_)(a.symmetry().as_i8().as_const(),
-                    a.cols().as_const(), b.cols().as_const(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
+                prefix!($t, hesv_)(a.symmetry().as_i8().as_mut(),
+                    a.cols().as_mut(), b.cols().as_mut(),
+                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
                     p.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
-                    (&mut work[..]).as_mut_ptr().as_c_ptr(), a.cols().as_const(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
+                    (&mut work[..]).as_mut_ptr().as_c_ptr(), a.cols().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
@@ -217,11 +217,11 @@ macro_rules! complex_lin_eq_impl(($($t: ident), +) => ($(
             unsafe {
                 let mut info: CLPK_integer = 0;
 
-                prefix!($t, hpsv_)(a.symmetry().as_i8().as_const(),
-                    a.cols().as_const(), b.cols().as_const(),
+                prefix!($t, hpsv_)(a.symmetry().as_i8().as_mut(),
+                    a.cols().as_mut(), b.cols().as_mut(),
                     a.as_mut_ptr().as_c_ptr(),
                     p.as_mut_ptr().as_c_ptr(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }

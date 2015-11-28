@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 #![feature(concat_idents)]
 #![feature(libc)]
+#![allow(improper_ctypes)]
 
 extern crate libc;
 extern crate num;
@@ -17,6 +18,7 @@ mod pointer;
 mod prefix;
 mod scalar;
 mod types;
+pub mod ll;
 pub mod matrix;
 pub mod linear_equations;
 pub mod least_squares;

@@ -6,7 +6,7 @@ use num::complex::{
     Complex32,
     Complex64,
 };
-use least_squares::ll::*;
+use ll::*;
 use matrix::{
     Matrix,
 };
@@ -34,12 +34,12 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                 let mut work: Vec<$t> = Vec::with_capacity(work_len as usize);
                 work.set_len(work_len as usize);
 
-                prefix!($t, gels_)(a.transpose().as_i8().as_const(),
-                    m.as_const(), n.as_const(),
-                    nrhs.as_const(),
-                    a.as_mut_ptr().as_c_ptr(), a.rows().as_const(),
-                    b.as_mut_ptr().as_c_ptr(), b.rows().as_const(),
-                    (&mut work[..]).as_mut_ptr().as_c_ptr(), work_len.as_const(),
+                prefix!($t, gels_)(a.transpose().as_i8().as_mut(),
+                    m.as_mut(), n.as_mut(),
+                    nrhs.as_mut(),
+                    a.as_mut_ptr().as_c_ptr(), a.rows().as_mut(),
+                    b.as_mut_ptr().as_c_ptr(), b.rows().as_mut(),
+                    (&mut work[..]).as_mut_ptr().as_c_ptr(), work_len.as_mut(),
                     &mut info as *mut CLPK_integer);
             }
         }
