@@ -8,10 +8,10 @@
 extern crate libc;
 extern crate num;
 
-pub use eigenvalues::ops::*;
-pub use general_eigenvalues::ops::*;
-pub use least_squares::ops::*;
-pub use linear_equations::ops::*;
+pub use eigenvalues::*;
+pub use general_eigenvalues::*;
+pub use least_squares::*;
+pub use linear_equations::*;
 
 #[macro_use]
 mod prefix;

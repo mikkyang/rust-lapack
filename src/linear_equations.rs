@@ -231,7 +231,7 @@ complex_lin_eq_impl!(Complex32, Complex64);
 #[cfg(test)]
 mod gesv_tests {
 
-    use linear_equations::ops::Gesv;
+    use linear_equations::Gesv;
 
     #[test]
     fn real() {
