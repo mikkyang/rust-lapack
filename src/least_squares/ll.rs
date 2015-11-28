@@ -14,7 +14,6 @@ use types::{
     CLPK_real,
 };
 
-#[link(name = "lapack")]
 extern "C" {
     pub fn sgels_(trans: *const c_char, m: *const CLPK_integer, n: *const CLPK_integer,
             nrhs: *const CLPK_integer, a: *mut CLPK_real, lda: *const CLPK_integer,

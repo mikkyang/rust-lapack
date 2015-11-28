@@ -15,7 +15,6 @@ use types::{
     CLPK_real,
 };
 
-#[link(name = "lapack")]
 extern "C" {
     pub fn ssyev_(jobz: c_char, uplo: c_char, n: *const CLPK_integer, a: *mut CLPK_real,
             lda: *const CLPK_integer, w: CLPK_real, work: CLPK_real,
