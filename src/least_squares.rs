@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 use std::cmp;
 use std::mem;
-use std::slice;
 use libc::c_int;
 use num::complex::{
     Complex32,
@@ -18,89 +17,78 @@ use scalar::Scalar;
 use types::Layout;
 use util::transpose_data;
 
-pub trait Gels {
-    fn gels(a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error>;
-    fn gels_work(a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error>;
+pub trait Gels: Sized {
+    fn gels(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error>;
+    fn gels_work(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error>;
     fn gels_work_len(a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<usize, Error>;
 }
 
 macro_rules! least_sq_impl(($($t: ident), +) => ($(
     impl Gels for $t {
-        fn gels(a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error> {
+        fn gels(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error> {
             //TODO: nancheck
 
-            let mut info: c_int = 0;
             let work_len = try!(Gels::gels_work_len(a, b));
             let mut work: Vec<$t> = Vec::with_capacity(work_len as usize);
-
             unsafe {
                 work.set_len(work_len as usize);
             }
 
-            Gels::gels_work(a, b, &mut work[..])
+            Gels::gels_work(layout, a, b, &mut work[..])
         }
 
-        fn gels_work(a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error> {
+        fn gels_work(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error> {
             let mut info: c_int = 0;
 
             let m = a.rows();
             let n = a.cols();
-            let mrhs = cmp::max(m, n);
             let nrhs = b.cols();
+            let lda = m;
+            let ldb = b.rows();
 
-            let mut a_t: Option<Vec<$t>> = None;
-            let mut b_t: Option<Vec<$t>> = None;
-
-            let (a_ptr, lda) = match a.layout() {
-                Layout::ColMajor => (a.as_mut_ptr(), a.rows()),
+            match layout {
+                Layout::ColMajor => unsafe {
+                    prefix!($t, gels_)(
+                        a.transpose().as_i8().as_mut(),
+                        m.as_mut(), n.as_mut(),
+                        nrhs.as_mut(),
+                        a.as_mut_ptr(), lda.as_mut(),
+                        b.as_mut_ptr(), ldb.as_mut(),
+                        work.as_mut_ptr(), (work.len() as c_int).as_mut(),
+                        &mut info as *mut c_int);
+                },
                 Layout::RowMajor => {
+                    let mrhs = cmp::max(m, n);
+
                     let lda_t = cmp::max(1, m);
-                    let len = (lda_t * cmp::max(1, n)) as usize;
-                    let mut temp = Vec::with_capacity(len);
-                    unsafe {
-                        temp.set_len(len);
-                    }
-                    let in_slice = unsafe {
-                        slice::from_raw_parts(a.as_ptr(), (m * n) as usize)
-                    };
-
-                    transpose_data(Layout::RowMajor, m as usize, n as usize, in_slice, m as usize, &mut temp[..], lda_t as usize);
-
-                    a_t = Some(temp);
-                    (a_t.unwrap().as_mut_ptr(), lda_t)
-                },
-            };
-
-            let (b_ptr, ldb) = match b.layout() {
-                Layout::ColMajor => (b.as_mut_ptr(), b.rows()),
-                Layout::RowMajor => {
                     let ldb_t = cmp::max(1, mrhs);
-                    let len = (ldb_t * cmp::max(1, nrhs)) as usize;
-                    let mut temp = Vec::with_capacity(len);
+
+                    let a_t_len = (lda_t * cmp::max(1, n)) as usize;
+                    let b_t_len = (ldb_t * cmp::max(1, nrhs)) as usize;
+                    let mut a_t = Vec::with_capacity(a_t_len);
+                    let mut b_t = Vec::with_capacity(b_t_len);
+
                     unsafe {
-                        temp.set_len(len);
+                        a_t.set_len(a_t_len);
+                        b_t.set_len(b_t_len);
+
+                        transpose_data(Layout::RowMajor, m as isize, n as isize, a.as_ptr(), m as isize, a_t.as_mut_ptr(), lda_t as isize);
+                        transpose_data(Layout::RowMajor, mrhs as isize, nrhs as isize, b.as_ptr(), mrhs as isize, b_t.as_mut_ptr(), ldb_t as isize);
+
+                        prefix!($t, gels_)(
+                            a.transpose().as_i8().as_mut(),
+                            m.as_mut(), n.as_mut(),
+                            nrhs.as_mut(),
+                            a_t.as_mut_ptr(), lda_t.as_mut(),
+                            b_t.as_mut_ptr(), ldb_t.as_mut(),
+                            work.as_mut_ptr(), (work.len() as c_int).as_mut(),
+                            &mut info as *mut c_int);
+
+                        transpose_data(Layout::ColMajor, m as isize, n as isize, a_t.as_ptr(), lda_t as isize, a.as_mut_ptr(), m as isize);
+                        transpose_data(Layout::ColMajor, mrhs as isize, nrhs as isize, b_t.as_ptr(), ldb_t as isize, b.as_mut_ptr(), mrhs as isize);
                     }
-                    let in_slice = unsafe {
-                        slice::from_raw_parts(b.as_ptr(), (mrhs * nrhs) as usize)
-                    };
-
-                    transpose_data(Layout::RowMajor, mrhs as usize, nrhs as usize, in_slice, mrhs as usize, &mut temp[..], ldb_t as usize);
-
-                    b_t = Some(temp);
-                    (b_t.unwrap().as_mut_ptr(), ldb_t)
-                },
-            };
-
-            unsafe {
-                prefix!($t, gels_)(
-                    a.transpose().as_i8().as_mut(),
-                    m.as_mut(), n.as_mut(),
-                    nrhs.as_mut(),
-                    a_ptr, lda.as_mut(),
-                    b_ptr, ldb.as_mut(),
-                    work.as_mut_ptr(), (work.len() as c_int).as_mut(),
-                    &mut info as *mut c_int);
-            };
+                }
+            }
 
             match info {
                 0 => Ok(()),
