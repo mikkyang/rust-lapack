@@ -13,6 +13,7 @@ use libc::{
 pub trait Scalar<T, S> {
     fn as_const(self) -> T;
     fn as_mut(self) -> S;
+    fn as_work(self) -> usize;
 }
 
 macro_rules! scalar_impl(
@@ -27,6 +28,11 @@ macro_rules! scalar_impl(
             fn as_mut(self) -> *mut $t {
                 self as *const _ as *mut $c_type
             }
+
+            #[inline]
+            fn as_work(self) -> usize {
+                *self as usize
+            }
         }
 
         impl<'a> Scalar<*const c_void, *mut c_void> for &'a Complex<$t> {
@@ -38,6 +44,11 @@ macro_rules! scalar_impl(
             #[inline]
             fn as_mut(self) -> *mut c_void {
                 self as *const _ as *mut c_void
+            }
+
+            #[inline]
+            fn as_work(self) -> usize {
+                self.re as usize
             }
         }
     );

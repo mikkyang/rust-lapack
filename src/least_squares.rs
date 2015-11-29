@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 use std::cmp;
 use std::mem;
+use std::ptr;
 use libc::c_int;
 use num::complex::{
     Complex32,
@@ -33,6 +34,8 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
             unsafe {
                 work.set_len(work_len as usize);
             }
+
+            print!("{:?}", work_len);
 
             Gels::gels_work(layout, a, b, &mut work[..])
         }
@@ -99,8 +102,8 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
 
         fn gels_work_len(a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<usize, Error> {
             let mut info: c_int = 0;
-            let mut len_info: [$t; 1] = unsafe { mem::zeroed() };
-            let len_ptr = (&mut len_info).as_mut_ptr();
+            let mut len_info: $t = unsafe { mem::zeroed() };
+            let len_ptr = (&mut len_info) as *mut $t;
 
             let m = a.rows();
             let n = a.cols();
@@ -120,10 +123,7 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
             };
 
             match info {
-                0 => unsafe {
-                    let cast_ptr = len_ptr as *const c_int;
-                    Ok(*cast_ptr as usize)
-                },
+                0 => Ok(len_info.as_work()),
                 x if x < 0 => Err(Error::IllegalParameter(-x as usize)),
                 x => Err(Error::DiagonalElementZero(x as usize)),
             }
