@@ -7,6 +7,7 @@
 extern crate libc;
 extern crate num;
 
+pub use matrix::Matrix;
 pub use eigenvalues::*;
 pub use general_eigenvalues::*;
 pub use least_squares::*;
