@@ -64,26 +64,30 @@
 <span id="22">22</span>
 <span id="23">23</span>
 <span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014 Michael Yang. All rights reserved.</span>
 <span class='comment'>// Use of this source code is governed by a MIT-style</span>
 <span class='comment'>// license that can be found in the LICENSE file.</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>concat_idents</span>)]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>libc</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>improper_ctypes</span>)]</span>
 
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>libc</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>num</span>;
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>eigenvalues</span>::<span class='ident'>ops</span>::<span class='op'>*</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>general_eigenvalues</span>::<span class='ident'>ops</span>::<span class='op'>*</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>least_squares</span>::<span class='ident'>ops</span>::<span class='op'>*</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>linear_equations</span>::<span class='ident'>ops</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>eigenvalues</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>general_eigenvalues</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>least_squares</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>linear_equations</span>::<span class='op'>*</span>;
 
-<span class='kw'>mod</span> <span class='ident'>pointer</span>;
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
 <span class='kw'>mod</span> <span class='ident'>prefix</span>;
 <span class='kw'>mod</span> <span class='ident'>scalar</span>;
 <span class='kw'>mod</span> <span class='ident'>types</span>;
+<span class='kw'>mod</span> <span class='ident'>util</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>ll</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>error</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>matrix</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>linear_equations</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>least_squares</span>;

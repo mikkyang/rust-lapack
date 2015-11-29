@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["eigenvalues",""],["general_eigenvalues",""],["least_squares",""],["linear_equations",""],["matrix",""]]});
+initSidebarItems({"mod":[["error",""],["least_squares",""],["linear_equations",""],["ll",""],["matrix",""]]});
