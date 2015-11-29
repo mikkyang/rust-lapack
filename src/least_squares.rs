@@ -143,8 +143,18 @@ mod gesv_tests {
 
         Gels::gels(ColMajor, &mut a, &mut b).unwrap();
 
-
         let (_, _, x) = b;
         assert_eq!(x, vec![1.0, 0.0, 0.0, 0.0, 2.0, 0.0]);
+    }
+
+    #[test]
+    fn row_major() {
+        let mut a = (3i32, 2i32, vec![2.0f32,3.0,4.0,9.0,7.0,4.0]);
+        let mut b = (3i32, 2i32, vec![2.0f32,3.0,4.0,9.0,7.0,4.0]);
+
+        Gels::gels(RowMajor, &mut a, &mut b).unwrap();
+
+        let (_, _, x) = b;
+        assert_eq!(x, vec![1.0, 0.0, 4.0, 0.0, 1.0, 4.0]);
     }
 }
