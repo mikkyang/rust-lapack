@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 use std::cmp;
 use std::mem;
-use std::ptr;
 use libc::c_int;
 use num::complex::{
     Complex32,
