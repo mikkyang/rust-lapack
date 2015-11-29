@@ -36,11 +36,11 @@ pub trait Ppsv {
     fn ppsv(a: &mut SymmetricMatrix<Self>, b: &mut Matrix<Self>);
 }
 
-pub trait Pbsv<M> where M: SymmetricMatrix<Self> + BandMatrix<Self> {
+pub trait Pbsv<M>: Sized where M: SymmetricMatrix<Self> + BandMatrix<Self> {
     fn pbsv(a: &mut M, b: &mut Matrix<Self>);
 }
 
-pub trait Ptsv<M> where M: TridiagonalMatrix<Self> + SymmetricMatrix<Self> {
+pub trait Ptsv<M>: Sized where M: TridiagonalMatrix<Self> + SymmetricMatrix<Self> {
     fn ptsv(a: &mut M, b: &mut Matrix<Self>);
 }
 
