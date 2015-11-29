@@ -16,6 +16,7 @@ pub use linear_equations::*;
 mod prefix;
 mod scalar;
 mod types;
+mod util;
 pub mod ll;
 pub mod error;
 pub mod matrix;
