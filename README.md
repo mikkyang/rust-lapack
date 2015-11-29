@@ -1,4 +1,4 @@
-# RBLAS
+# RLAPACK
 
 Rust bindings and wrappers for LAPACK (Linear Algebra PACKage).
 
@@ -23,7 +23,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rlapack = "0.0.2"
+rlapack = "0.0.3"
 ```
 
 and this to your crate root:
