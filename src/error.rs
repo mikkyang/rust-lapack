@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 
 pub enum Error {
+    DimensionMismatch,
     IllegalParameter(usize),
     DiagonalElementZero(usize),
 }
