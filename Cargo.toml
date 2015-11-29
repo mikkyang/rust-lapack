@@ -1,7 +1,7 @@
 [package]
 
 name = "rlapack"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Michael Yang <mikkyangg@gmail.com>"]
 description = "LAPACK bindings and wrappers"
 documentation = "http://mikkyang.github.io/rust-lapack/doc/rlapack/index.html"

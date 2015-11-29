@@ -23,7 +23,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-rlapack = "0.0.3"
+rlapack = "0.0.4"
 ```
 
 and this to your crate root:
