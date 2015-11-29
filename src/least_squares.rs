@@ -44,11 +44,12 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
             let m = a.rows();
             let n = a.cols();
             let nrhs = b.cols();
-            let lda = m;
-            let ldb = b.rows();
 
             match layout {
                 Layout::ColMajor => unsafe {
+                    let lda = m;
+                    let ldb = b.rows();
+
                     prefix!($t, gels_)(
                         a.transpose().as_i8().as_mut(),
                         m.as_mut(), n.as_mut(),
@@ -59,6 +60,8 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                         &mut info as *mut c_int);
                 },
                 Layout::RowMajor => {
+                    let lda = n;
+                    let ldb = nrhs;
                     let mrhs = cmp::max(m, n);
 
                     let lda_t = cmp::max(1, m);
@@ -73,8 +76,8 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                         a_t.set_len(a_t_len);
                         b_t.set_len(b_t_len);
 
-                        transpose_data(Layout::RowMajor, m as isize, n as isize, a.as_ptr(), m as isize, a_t.as_mut_ptr(), lda_t as isize);
-                        transpose_data(Layout::RowMajor, mrhs as isize, nrhs as isize, b.as_ptr(), mrhs as isize, b_t.as_mut_ptr(), ldb_t as isize);
+                        transpose_data(Layout::RowMajor, m as isize, n as isize, a.as_ptr(), lda as isize, a_t.as_mut_ptr(), lda_t as isize);
+                        transpose_data(Layout::RowMajor, mrhs as isize, nrhs as isize, b.as_ptr(), ldb as isize, b_t.as_mut_ptr(), ldb_t as isize);
 
                         prefix!($t, gels_)(
                             a.transpose().as_i8().as_mut(),
@@ -85,8 +88,8 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                             work.as_mut_ptr(), (work.len() as c_int).as_mut(),
                             &mut info as *mut c_int);
 
-                        transpose_data(Layout::ColMajor, m as isize, n as isize, a_t.as_ptr(), lda_t as isize, a.as_mut_ptr(), m as isize);
-                        transpose_data(Layout::ColMajor, mrhs as isize, nrhs as isize, b_t.as_ptr(), ldb_t as isize, b.as_mut_ptr(), mrhs as isize);
+                        transpose_data(Layout::ColMajor, m as isize, n as isize, a_t.as_ptr(), lda_t as isize, a.as_mut_ptr(), lda as isize);
+                        transpose_data(Layout::ColMajor, mrhs as isize, nrhs as isize, b_t.as_ptr(), ldb_t as isize, b.as_mut_ptr(), ldb as isize);
                     }
                 }
             }
@@ -155,6 +158,6 @@ mod gesv_tests {
         Gels::gels(RowMajor, &mut a, &mut b).unwrap();
 
         let (_, _, x) = b;
-        assert_eq!(x, vec![1.0, 0.0, 4.0, 0.0, 1.0, 4.0]);
+        assert_eq!(x, vec![1.0, 0.0, 0.0, 1.0, 0.0, 0.0]);
     }
 }
