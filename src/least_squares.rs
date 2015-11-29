@@ -35,8 +35,6 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                 work.set_len(work_len as usize);
             }
 
-            print!("{:?}", work_len);
-
             Gels::gels_work(layout, a, b, &mut work[..])
         }
 
@@ -147,7 +145,6 @@ mod gesv_tests {
 
 
         let (_, _, x) = b;
-        println!("{:?}", x);
         assert_eq!(x, vec![1.0, 0.0, 0.0, 0.0, 2.0, 0.0]);
     }
 }
