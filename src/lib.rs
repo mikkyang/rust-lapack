@@ -7,7 +7,9 @@
 extern crate libc;
 extern crate num;
 
+pub use error::Error;
 pub use matrix::Matrix;
+pub use types::*;
 pub use eigenvalues::*;
 pub use general_eigenvalues::*;
 pub use least_squares::*;
@@ -16,11 +18,11 @@ pub use linear_equations::*;
 #[macro_use]
 mod prefix;
 mod scalar;
-mod types;
 mod util;
 pub mod ll;
 pub mod error;
 pub mod matrix;
+pub mod types;
 pub mod linear_equations;
 pub mod least_squares;
 pub mod eigenvalues;
