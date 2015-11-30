@@ -20,8 +20,7 @@ use types::{Symmetry, Layout};
 use util::transpose_data;
 
 pub trait Gesv {
-    fn gesv(a: &mut Matrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<c_int>);
-    fn gesv_work(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>)
+    fn gesv(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>)
         -> Result<Vec<usize>, Error>;
 }
 
@@ -67,19 +66,9 @@ pub trait Hpsv {
 
 macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     impl Gesv for $t {
-        fn gesv(a: &mut Matrix<$t>, b: &mut Matrix<$t>, p: &mut Matrix<c_int>) {
-            unsafe {
-                let mut info: c_int = 0;
+        fn gesv(layout: Layout, a: &mut Matrix<$t>, b: &mut Matrix<$t>) -> Result<Vec<usize>, Error> {
+            //TODO: nancheck
 
-                prefix!($t, gesv_)(a.cols().as_mut(), b.cols().as_mut(),
-                    a.as_mut_ptr(), a.rows().as_mut(),
-                    p.as_mut_ptr(),
-                    b.as_mut_ptr(), b.rows().as_mut(),
-                    &mut info as *mut c_int);
-            }
-        }
-
-        fn gesv_work(layout: Layout, a: &mut Matrix<$t>, b: &mut Matrix<$t>) -> Result<Vec<usize>, Error> {
             let mut info: c_int = 0;
 
             let n = a.rows();
@@ -297,16 +286,15 @@ complex_lin_eq_impl!(Complex32, Complex64);
 
 #[cfg(test)]
 mod gesv_tests {
-
     use linear_equations::Gesv;
+    use types::Layout;
 
     #[test]
     fn real() {
         let mut a = (2i32, 2i32, vec![1.0f64, 4.0, 1.0, 2.0]);
         let mut b = (2i32, 1i32, vec![-2.0f64, 2.0]);
-        let mut p = (2i32, 2i32, vec![0i32, 0]);
 
-        Gesv::gesv(&mut a, &mut b, &mut p);
+        Gesv::gesv(Layout::ColMajor, &mut a, &mut b).unwrap();
 
         let (_, _, x) = b;
         assert_eq!(x, vec![3.0f64, -5.0]);
