@@ -18,25 +18,24 @@ use types::Layout;
 use util::transpose_data;
 
 pub trait Gels: Sized {
-    fn gels(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error>;
+    fn gels(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error> {
+        //TODO: nancheck
+
+        let work_len = try!(Gels::gels_work_len(a, b));
+        let mut work: Vec<_> = Vec::with_capacity(work_len as usize);
+        unsafe {
+            work.set_len(work_len as usize);
+        }
+
+        Gels::gels_work(layout, a, b, &mut work[..])
+    }
+
     fn gels_work(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error>;
     fn gels_work_len(a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<usize, Error>;
 }
 
 macro_rules! least_sq_impl(($($t: ident), +) => ($(
     impl Gels for $t {
-        fn gels(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error> {
-            //TODO: nancheck
-
-            let work_len = try!(Gels::gels_work_len(a, b));
-            let mut work: Vec<$t> = Vec::with_capacity(work_len as usize);
-            unsafe {
-                work.set_len(work_len as usize);
-            }
-
-            Gels::gels_work(layout, a, b, &mut work[..])
-        }
-
         fn gels_work(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error> {
             let mut info: c_int = 0;
 
