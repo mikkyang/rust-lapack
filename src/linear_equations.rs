@@ -1,11 +1,13 @@
 // Copyright 2014 Michael Yang. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
+use std::cmp;
 use num::complex::{
     Complex32,
     Complex64,
 };
 use libc::c_int;
+use error::Error;
 use ll::*;
 use matrix::{
     Matrix,
@@ -14,10 +16,13 @@ use matrix::{
     TridiagonalMatrix,
 };
 use scalar::Scalar;
-use types::Symmetry;
+use types::{Symmetry, Layout};
+use util::transpose_data;
 
 pub trait Gesv {
     fn gesv(a: &mut Matrix<Self>, b: &mut Matrix<Self>, p: &mut Matrix<c_int>);
+    fn gesv_work(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>)
+        -> Result<Vec<usize>, Error>;
 }
 
 pub trait Gbsv {
@@ -71,6 +76,68 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                     p.as_mut_ptr(),
                     b.as_mut_ptr(), b.rows().as_mut(),
                     &mut info as *mut c_int);
+            }
+        }
+
+        fn gesv_work(layout: Layout, a: &mut Matrix<$t>, b: &mut Matrix<$t>) -> Result<Vec<usize>, Error> {
+            let mut info: c_int = 0;
+
+            let n = a.rows();
+            if n != a.cols() {
+                return Err(Error::DimensionMismatch);
+            }
+
+            let nrhs = b.cols();
+            let mut pivot_indices: Vec<usize> = Vec::with_capacity(n as usize);
+            unsafe { pivot_indices.set_len(n as usize); }
+
+            match layout {
+                Layout::ColMajor => unsafe {
+                    let lda = n;
+                    let ldb = b.rows();
+
+                    prefix!($t, gesv_)(
+                        n.as_mut(), nrhs.as_mut(),
+                        a.as_mut_ptr(), lda.as_mut(),
+                        pivot_indices.as_mut_ptr() as *mut c_int,
+                        b.as_mut_ptr(), ldb.as_mut(),
+                        &mut info as *mut c_int);
+                },
+                Layout::RowMajor => {
+                    let lda = n;
+                    let ldb = nrhs;
+                    let lda_t = cmp::max(1, n);
+                    let ldb_t = cmp::max(1, n);
+
+                    let a_t_len = (lda_t * cmp::max(1, n)) as usize;
+                    let b_t_len = (ldb_t * cmp::max(1, nrhs)) as usize;
+                    let mut a_t = Vec::with_capacity(a_t_len);
+                    let mut b_t = Vec::with_capacity(b_t_len);
+
+                    unsafe {
+                        a_t.set_len(a_t_len);
+                        b_t.set_len(b_t_len);
+
+                        transpose_data(Layout::RowMajor, n as isize, n as isize, a.as_ptr(), lda as isize, a_t.as_mut_ptr(), lda_t as isize);
+                        transpose_data(Layout::RowMajor, n as isize, nrhs as isize, b.as_ptr(), ldb as isize, b_t.as_mut_ptr(), ldb_t as isize);
+
+                        prefix!($t, gesv_)(
+                            n.as_mut(), nrhs.as_mut(),
+                            a_t.as_mut_ptr(), lda_t.as_mut(),
+                            pivot_indices.as_mut_ptr() as *mut c_int,
+                            b_t.as_mut_ptr(), ldb_t.as_mut(),
+                            &mut info as *mut c_int);
+
+                        transpose_data(Layout::ColMajor, n as isize, n as isize, a_t.as_ptr(), lda_t as isize, a.as_mut_ptr(), lda as isize);
+                        transpose_data(Layout::ColMajor, n as isize, nrhs as isize, b_t.as_ptr(), ldb_t as isize, b.as_mut_ptr(), ldb as isize);
+                    }
+                }
+            }
+
+            match info {
+                0 => Ok(pivot_indices),
+                x if x < 0 => Err(Error::IllegalParameter(-x as usize)),
+                x => Err(Error::DiagonalElementZero(x as usize)),
             }
         }
     }
