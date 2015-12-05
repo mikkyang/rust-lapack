@@ -5,13 +5,11 @@
 use libc::c_int;
 use types::{
     Symmetry,
-    Transpose,
 };
 
 pub trait Matrix<T> {
     fn rows(&self) -> c_int;
     fn cols(&self) -> c_int;
-    fn transpose(&self) -> Transpose { Transpose::None }
     fn as_ptr(&self) -> *const T;
     fn as_mut_ptr(&mut self) -> *mut T;
 }

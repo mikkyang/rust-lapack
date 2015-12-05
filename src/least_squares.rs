@@ -14,29 +14,29 @@ use matrix::{
     Matrix,
 };
 use scalar::Scalar;
-use types::Layout;
+use types::{Layout, Transpose};
 use util::transpose_data;
 
 pub trait Gels: Sized {
-    fn gels(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error> {
+    fn gels(layout: Layout, a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error> {
         //TODO: nancheck
 
-        let work_len = try!(Gels::gels_work_len(a, b));
+        let work_len = try!(Gels::gels_work_len(a_trans, a, b));
         let mut work: Vec<_> = Vec::with_capacity(work_len as usize);
         unsafe {
             work.set_len(work_len as usize);
         }
 
-        Gels::gels_work(layout, a, b, &mut work[..])
+        Gels::gels_work(layout, a_trans, a, b, &mut work[..])
     }
 
-    fn gels_work(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error>;
-    fn gels_work_len(a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<usize, Error>;
+    fn gels_work(layout: Layout, a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error>;
+    fn gels_work_len(a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<usize, Error>;
 }
 
 macro_rules! least_sq_impl(($($t: ident), +) => ($(
     impl Gels for $t {
-        fn gels_work(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error> {
+        fn gels_work(layout: Layout, a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error> {
             let mut info: c_int = 0;
 
             let m = a.rows();
@@ -49,7 +49,7 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                     let ldb = b.rows();
 
                     prefix!($t, gels_)(
-                        a.transpose().as_i8().as_mut(),
+                        a_trans.as_i8().as_mut(),
                         m.as_mut(), n.as_mut(),
                         nrhs.as_mut(),
                         a.as_mut_ptr(), lda.as_mut(),
@@ -78,7 +78,7 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                         transpose_data(Layout::RowMajor, mrhs as isize, nrhs as isize, b.as_ptr(), ldb as isize, b_t.as_mut_ptr(), ldb_t as isize);
 
                         prefix!($t, gels_)(
-                            a.transpose().as_i8().as_mut(),
+                            a_trans.as_i8().as_mut(),
                             m.as_mut(), n.as_mut(),
                             nrhs.as_mut(),
                             a_t.as_mut_ptr(), lda_t.as_mut(),
@@ -99,7 +99,7 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
             }
         }
 
-        fn gels_work_len(a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<usize, Error> {
+        fn gels_work_len(a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<usize, Error> {
             let mut info: c_int = 0;
             let mut len_info: $t = unsafe { mem::zeroed() };
             let len_ptr = (&mut len_info) as *mut $t;
@@ -112,7 +112,7 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
 
             unsafe {
                 prefix!($t, gels_)(
-                    a.transpose().as_i8().as_mut(),
+                    a_trans.as_i8().as_mut(),
                     m.as_mut(), n.as_mut(),
                     nrhs.as_mut(),
                     a.as_mut_ptr(), lda_t.as_mut(),
@@ -135,6 +135,7 @@ least_sq_impl!(f32, f64, Complex32, Complex64);
 #[cfg(test)]
 mod gesv_tests {
     use types::Layout::*;
+    use types::Transpose;
     use least_squares::Gels;
 
     #[test]
@@ -142,7 +143,7 @@ mod gesv_tests {
         let mut a = (3i32, 2i32, vec![2.0f32,4.0,7.0,3.0,9.0,4.0]);
         let mut b = (3i32, 2i32, vec![2.0f32,4.0,7.0,6.0,18.0,8.0]);
 
-        Gels::gels(ColMajor, &mut a, &mut b).unwrap();
+        Gels::gels(ColMajor, &Transpose::None, &mut a, &mut b).unwrap();
 
         let (_, _, x) = b;
         assert_eq!(x, vec![1.0, 0.0, 0.0, 0.0, 2.0, 0.0]);
@@ -153,7 +154,7 @@ mod gesv_tests {
         let mut a = (3i32, 2i32, vec![2.0f32,3.0,4.0,9.0,7.0,4.0]);
         let mut b = (3i32, 2i32, vec![2.0f32,3.0,4.0,9.0,7.0,4.0]);
 
-        Gels::gels(RowMajor, &mut a, &mut b).unwrap();
+        Gels::gels(RowMajor, &Transpose::None, &mut a, &mut b).unwrap();
 
         let (_, _, x) = b;
         assert_eq!(x, vec![1.0, 0.0, 0.0, 1.0, 0.0, 0.0]);
