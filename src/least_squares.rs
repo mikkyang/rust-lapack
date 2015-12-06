@@ -133,7 +133,7 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
 least_sq_impl!(f32, f64, Complex32, Complex64);
 
 #[cfg(test)]
-mod gesv_tests {
+mod gels_tests {
     use types::Order::*;
     use types::Transpose;
     use matrix::tests::M;
