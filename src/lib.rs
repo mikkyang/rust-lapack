@@ -6,6 +6,8 @@
 
 extern crate libc;
 extern crate num;
+#[cfg(feature = "default")]
+extern crate rblas;
 
 pub use error::Error;
 pub use matrix::Matrix;

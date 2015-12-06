@@ -7,6 +7,10 @@ use types::{
     Symmetry,
 };
 
+#[cfg(feature = "default")]
+pub use rblas::Matrix;
+
+#[cfg(not(feature = "default"))]
 pub trait Matrix<T> {
     fn rows(&self) -> c_int;
     fn cols(&self) -> c_int;

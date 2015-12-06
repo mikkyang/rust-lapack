@@ -12,6 +12,13 @@ keywords = ["LAPACK"]
 license = "MIT"
 build = "build.rs"
 
+[features]
+default = ["rblas"]
+
 [dependencies]
 num = "0.1"
 libc = "0.2"
+
+[dependencies.rblas]
+git = "https://github.com/mikkyang/rust-blas"
+optional = true
