@@ -14,11 +14,11 @@ use matrix::{
     Matrix,
 };
 use scalar::Scalar;
-use types::{Layout, Transpose};
+use types::{Order, Transpose};
 use util::transpose_data;
 
 pub trait Gels: Sized {
-    fn gels(layout: Layout, a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error> {
+    fn gels(layout: Order, a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error> {
         //TODO: nancheck
 
         let work_len = try!(Gels::gels_work_len(a_trans, a, b));
@@ -30,13 +30,13 @@ pub trait Gels: Sized {
         Gels::gels_work(layout, a_trans, a, b, &mut work[..])
     }
 
-    fn gels_work(layout: Layout, a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error>;
+    fn gels_work(layout: Order, a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error>;
     fn gels_work_len(a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<usize, Error>;
 }
 
 macro_rules! least_sq_impl(($($t: ident), +) => ($(
     impl Gels for $t {
-        fn gels_work(layout: Layout, a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error> {
+        fn gels_work(layout: Order, a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error> {
             let mut info: c_int = 0;
 
             let m = a.rows();
@@ -44,7 +44,7 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
             let nrhs = b.cols();
 
             match layout {
-                Layout::ColMajor => unsafe {
+                Order::ColMajor => unsafe {
                     let lda = m;
                     let ldb = b.rows();
 
@@ -57,7 +57,7 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                         work.as_mut_ptr(), (work.len() as c_int).as_mut(),
                         &mut info as *mut c_int);
                 },
-                Layout::RowMajor => {
+                Order::RowMajor => {
                     let lda = n;
                     let ldb = nrhs;
                     let mrhs = cmp::max(m, n);
@@ -74,8 +74,8 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                         a_t.set_len(a_t_len);
                         b_t.set_len(b_t_len);
 
-                        transpose_data(Layout::RowMajor, m as isize, n as isize, a.as_ptr(), lda as isize, a_t.as_mut_ptr(), lda_t as isize);
-                        transpose_data(Layout::RowMajor, mrhs as isize, nrhs as isize, b.as_ptr(), ldb as isize, b_t.as_mut_ptr(), ldb_t as isize);
+                        transpose_data(Order::RowMajor, m as isize, n as isize, a.as_ptr(), lda as isize, a_t.as_mut_ptr(), lda_t as isize);
+                        transpose_data(Order::RowMajor, mrhs as isize, nrhs as isize, b.as_ptr(), ldb as isize, b_t.as_mut_ptr(), ldb_t as isize);
 
                         prefix!($t, gels_)(
                             a_trans.as_i8().as_mut(),
@@ -86,8 +86,8 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
                             work.as_mut_ptr(), (work.len() as c_int).as_mut(),
                             &mut info as *mut c_int);
 
-                        transpose_data(Layout::ColMajor, m as isize, n as isize, a_t.as_ptr(), lda_t as isize, a.as_mut_ptr(), lda as isize);
-                        transpose_data(Layout::ColMajor, mrhs as isize, nrhs as isize, b_t.as_ptr(), ldb_t as isize, b.as_mut_ptr(), ldb as isize);
+                        transpose_data(Order::ColMajor, m as isize, n as isize, a_t.as_ptr(), lda_t as isize, a.as_mut_ptr(), lda as isize);
+                        transpose_data(Order::ColMajor, mrhs as isize, nrhs as isize, b_t.as_ptr(), ldb_t as isize, b.as_mut_ptr(), ldb as isize);
                     }
                 }
             }
@@ -134,7 +134,7 @@ least_sq_impl!(f32, f64, Complex32, Complex64);
 
 #[cfg(test)]
 mod gesv_tests {
-    use types::Layout::*;
+    use types::Order::*;
     use types::Transpose;
     use matrix::tests::M;
     use least_squares::Gels;

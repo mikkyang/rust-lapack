@@ -2,7 +2,16 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-pub enum Layout {
+#[cfg(feature = "default")]
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub enum Order {
+    RowMajor=101,
+    ColMajor=102,
+}
+
+#[cfg(not(feature = "default"))]
+pub enum Order {
     RowMajor,
     ColMajor,
 }

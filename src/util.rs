@@ -3,10 +3,10 @@
 // license that can be found in the LICENSE file.
 use std::cmp;
 use std::ptr;
-use types::Layout;
-use types::Layout::*;
+use types::Order;
+use types::Order::*;
 
-pub unsafe fn transpose_data<T>(initial_layout: Layout, m: isize, n: isize, input: *const T, ld_input: isize, output: *mut T, ld_output: isize) {
+pub unsafe fn transpose_data<T>(initial_layout: Order, m: isize, n: isize, input: *const T, ld_input: isize, output: *mut T, ld_output: isize) {
     let (x, y) = match initial_layout {
         ColMajor => (n, m),
         RowMajor => (m, n),
@@ -25,7 +25,7 @@ pub unsafe fn transpose_data<T>(initial_layout: Layout, m: isize, n: isize, inpu
 #[cfg(test)]
 mod tests {
     use std::mem;
-    use types::Layout::*;
+    use types::Order::*;
     use util::transpose_data;
 
     #[test]

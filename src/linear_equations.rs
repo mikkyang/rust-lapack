@@ -16,11 +16,11 @@ use matrix::{
     TridiagonalMatrix,
 };
 use scalar::Scalar;
-use types::{Symmetry, Layout};
+use types::{Symmetry, Order};
 use util::transpose_data;
 
 pub trait Gesv {
-    fn gesv(layout: Layout, a: &mut Matrix<Self>, b: &mut Matrix<Self>)
+    fn gesv(layout: Order, a: &mut Matrix<Self>, b: &mut Matrix<Self>)
         -> Result<Vec<usize>, Error>;
 }
 
@@ -66,7 +66,7 @@ pub trait Hpsv {
 
 macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     impl Gesv for $t {
-        fn gesv(layout: Layout, a: &mut Matrix<$t>, b: &mut Matrix<$t>) -> Result<Vec<usize>, Error> {
+        fn gesv(layout: Order, a: &mut Matrix<$t>, b: &mut Matrix<$t>) -> Result<Vec<usize>, Error> {
             //TODO: nancheck
 
             let mut info: c_int = 0;
@@ -81,7 +81,7 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
             unsafe { pivot_indices.set_len(n as usize); }
 
             match layout {
-                Layout::ColMajor => unsafe {
+                Order::ColMajor => unsafe {
                     let lda = n;
                     let ldb = b.rows();
 
@@ -92,7 +92,7 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                         b.as_mut_ptr(), ldb.as_mut(),
                         &mut info as *mut c_int);
                 },
-                Layout::RowMajor => {
+                Order::RowMajor => {
                     let lda = n;
                     let ldb = nrhs;
                     let lda_t = cmp::max(1, n);
@@ -107,8 +107,8 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                         a_t.set_len(a_t_len);
                         b_t.set_len(b_t_len);
 
-                        transpose_data(Layout::RowMajor, n as isize, n as isize, a.as_ptr(), lda as isize, a_t.as_mut_ptr(), lda_t as isize);
-                        transpose_data(Layout::RowMajor, n as isize, nrhs as isize, b.as_ptr(), ldb as isize, b_t.as_mut_ptr(), ldb_t as isize);
+                        transpose_data(Order::RowMajor, n as isize, n as isize, a.as_ptr(), lda as isize, a_t.as_mut_ptr(), lda_t as isize);
+                        transpose_data(Order::RowMajor, n as isize, nrhs as isize, b.as_ptr(), ldb as isize, b_t.as_mut_ptr(), ldb_t as isize);
 
                         prefix!($t, gesv_)(
                             n.as_mut(), nrhs.as_mut(),
@@ -117,8 +117,8 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
                             b_t.as_mut_ptr(), ldb_t.as_mut(),
                             &mut info as *mut c_int);
 
-                        transpose_data(Layout::ColMajor, n as isize, n as isize, a_t.as_ptr(), lda_t as isize, a.as_mut_ptr(), lda as isize);
-                        transpose_data(Layout::ColMajor, n as isize, nrhs as isize, b_t.as_ptr(), ldb_t as isize, b.as_mut_ptr(), ldb as isize);
+                        transpose_data(Order::ColMajor, n as isize, n as isize, a_t.as_ptr(), lda_t as isize, a.as_mut_ptr(), lda as isize);
+                        transpose_data(Order::ColMajor, n as isize, nrhs as isize, b_t.as_ptr(), ldb_t as isize, b.as_mut_ptr(), ldb as isize);
                     }
                 }
             }
@@ -288,14 +288,14 @@ complex_lin_eq_impl!(Complex32, Complex64);
 mod gesv_tests {
     use linear_equations::Gesv;
     use matrix::tests::M;
-    use types::Layout;
+    use types::Order;
 
     #[test]
     fn real() {
         let mut a = M(2i32, 2i32, vec![1.0f64, 4.0, 1.0, 2.0]);
         let mut b = M(2i32, 1i32, vec![-2.0f64, 2.0]);
 
-        Gesv::gesv(Layout::ColMajor, &mut a, &mut b).unwrap();
+        Gesv::gesv(Order::ColMajor, &mut a, &mut b).unwrap();
 
         let M(_, _, x) = b;
         assert_eq!(x, vec![3.0f64, -5.0]);
