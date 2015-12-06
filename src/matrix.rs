@@ -8,7 +8,7 @@ use types::{
 };
 
 #[cfg(feature = "default")]
-pub use rblas::Matrix;
+pub use rblas::matrix::{Matrix, BandMatrix};
 
 #[cfg(not(feature = "default"))]
 pub trait Matrix<T> {
@@ -18,6 +18,7 @@ pub trait Matrix<T> {
     fn as_mut_ptr(&mut self) -> *mut T;
 }
 
+#[cfg(not(feature = "default"))]
 pub trait BandMatrix<T>: Matrix<T> {
     fn sub_diagonals(&self) -> c_int;
     fn sup_diagonals(&self) -> c_int;
