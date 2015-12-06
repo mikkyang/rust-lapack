@@ -33,7 +33,9 @@ pub mod tests {
     use libc::c_int;
     use matrix::Matrix;
 
-    impl<T> Matrix<T> for (c_int, c_int, Vec<T>) {
+    pub struct M<T>(pub c_int, pub c_int, pub Vec<T>);
+
+    impl<T> Matrix<T> for M<T> {
         fn rows(&self) -> c_int {
             self.0
         }

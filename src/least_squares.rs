@@ -136,27 +136,28 @@ least_sq_impl!(f32, f64, Complex32, Complex64);
 mod gesv_tests {
     use types::Layout::*;
     use types::Transpose;
+    use matrix::tests::M;
     use least_squares::Gels;
 
     #[test]
     fn col_major() {
-        let mut a = (3i32, 2i32, vec![2.0f32,4.0,7.0,3.0,9.0,4.0]);
-        let mut b = (3i32, 2i32, vec![2.0f32,4.0,7.0,6.0,18.0,8.0]);
+        let mut a = M(3i32, 2i32, vec![2.0f32,4.0,7.0,3.0,9.0,4.0]);
+        let mut b = M(3i32, 2i32, vec![2.0f32,4.0,7.0,6.0,18.0,8.0]);
 
         Gels::gels(ColMajor, &Transpose::None, &mut a, &mut b).unwrap();
 
-        let (_, _, x) = b;
+        let M(_, _, x) = b;
         assert_eq!(x, vec![1.0, 0.0, 0.0, 0.0, 2.0, 0.0]);
     }
 
     #[test]
     fn row_major() {
-        let mut a = (3i32, 2i32, vec![2.0f32,3.0,4.0,9.0,7.0,4.0]);
-        let mut b = (3i32, 2i32, vec![2.0f32,3.0,4.0,9.0,7.0,4.0]);
+        let mut a = M(3i32, 2i32, vec![2.0f32,3.0,4.0,9.0,7.0,4.0]);
+        let mut b = M(3i32, 2i32, vec![2.0f32,3.0,4.0,9.0,7.0,4.0]);
 
         Gels::gels(RowMajor, &Transpose::None, &mut a, &mut b).unwrap();
 
-        let (_, _, x) = b;
+        let M(_, _, x) = b;
         assert_eq!(x, vec![1.0, 0.0, 0.0, 1.0, 0.0, 0.0]);
     }
 }

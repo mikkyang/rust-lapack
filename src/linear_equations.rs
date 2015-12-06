@@ -287,16 +287,17 @@ complex_lin_eq_impl!(Complex32, Complex64);
 #[cfg(test)]
 mod gesv_tests {
     use linear_equations::Gesv;
+    use matrix::tests::M;
     use types::Layout;
 
     #[test]
     fn real() {
-        let mut a = (2i32, 2i32, vec![1.0f64, 4.0, 1.0, 2.0]);
-        let mut b = (2i32, 1i32, vec![-2.0f64, 2.0]);
+        let mut a = M(2i32, 2i32, vec![1.0f64, 4.0, 1.0, 2.0]);
+        let mut b = M(2i32, 1i32, vec![-2.0f64, 2.0]);
 
         Gesv::gesv(Layout::ColMajor, &mut a, &mut b).unwrap();
 
-        let (_, _, x) = b;
+        let M(_, _, x) = b;
         assert_eq!(x, vec![3.0f64, -5.0]);
     }
 }
