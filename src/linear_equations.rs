@@ -1,7 +1,6 @@
 // Copyright 2014 Michael Yang. All rights reserved.
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
-use std::cmp;
 use num::complex::{
     Complex32,
     Complex64,
@@ -16,11 +15,11 @@ use matrix::{
     TridiagonalMatrix,
 };
 use scalar::Scalar;
-use types::{Symmetry, Order};
-use util::transpose_data;
+use types::Symmetry;
+use util::ColMem;
 
 pub trait Gesv {
-    fn gesv(layout: Order, a: &mut Matrix<Self>, b: &mut Matrix<Self>)
+    fn gesv(a: &mut Matrix<Self>, b: &mut Matrix<Self>)
         -> Result<Vec<usize>, Error>;
 }
 
@@ -66,7 +65,7 @@ pub trait Hpsv {
 
 macro_rules! lin_eq_impl(($($t: ident), +) => ($(
     impl Gesv for $t {
-        fn gesv(layout: Order, a: &mut Matrix<$t>, b: &mut Matrix<$t>) -> Result<Vec<usize>, Error> {
+        fn gesv(a: &mut Matrix<$t>, b: &mut Matrix<$t>) -> Result<Vec<usize>, Error> {
             //TODO: nancheck
 
             let mut info: c_int = 0;
@@ -80,47 +79,16 @@ macro_rules! lin_eq_impl(($($t: ident), +) => ($(
             let mut pivot_indices: Vec<usize> = Vec::with_capacity(n as usize);
             unsafe { pivot_indices.set_len(n as usize); }
 
-            match layout {
-                Order::ColMajor => unsafe {
-                    let lda = n;
-                    let ldb = b.rows();
+            let mut a_mem = ColMem::new(a.order(), a);
+            let mut b_mem = ColMem::new(b.order(), b);
 
-                    prefix!($t, gesv_)(
-                        n.as_mut(), nrhs.as_mut(),
-                        a.as_mut_ptr(), lda.as_mut(),
-                        pivot_indices.as_mut_ptr() as *mut c_int,
-                        b.as_mut_ptr(), ldb.as_mut(),
-                        &mut info as *mut c_int);
-                },
-                Order::RowMajor => {
-                    let lda = n;
-                    let ldb = nrhs;
-                    let lda_t = cmp::max(1, n);
-                    let ldb_t = cmp::max(1, n);
-
-                    let a_t_len = (lda_t * cmp::max(1, n)) as usize;
-                    let b_t_len = (ldb_t * cmp::max(1, nrhs)) as usize;
-                    let mut a_t = Vec::with_capacity(a_t_len);
-                    let mut b_t = Vec::with_capacity(b_t_len);
-
-                    unsafe {
-                        a_t.set_len(a_t_len);
-                        b_t.set_len(b_t_len);
-
-                        transpose_data(Order::RowMajor, n as isize, n as isize, a.as_ptr(), lda as isize, a_t.as_mut_ptr(), lda_t as isize);
-                        transpose_data(Order::RowMajor, n as isize, nrhs as isize, b.as_ptr(), ldb as isize, b_t.as_mut_ptr(), ldb_t as isize);
-
-                        prefix!($t, gesv_)(
-                            n.as_mut(), nrhs.as_mut(),
-                            a_t.as_mut_ptr(), lda_t.as_mut(),
-                            pivot_indices.as_mut_ptr() as *mut c_int,
-                            b_t.as_mut_ptr(), ldb_t.as_mut(),
-                            &mut info as *mut c_int);
-
-                        transpose_data(Order::ColMajor, n as isize, n as isize, a_t.as_ptr(), lda_t as isize, a.as_mut_ptr(), lda as isize);
-                        transpose_data(Order::ColMajor, n as isize, nrhs as isize, b_t.as_ptr(), ldb_t as isize, b.as_mut_ptr(), ldb as isize);
-                    }
-                }
+            unsafe {
+                prefix!($t, gesv_)(
+                    n.as_mut(), nrhs.as_mut(),
+                    a_mem.as_mut_ptr(), a_mem.lead().as_mut(),
+                    pivot_indices.as_mut_ptr() as *mut c_int,
+                    b_mem.as_mut_ptr(), b_mem.lead().as_mut(),
+                    &mut info as *mut c_int);
             }
 
             match info {
@@ -288,16 +256,16 @@ complex_lin_eq_impl!(Complex32, Complex64);
 mod gesv_tests {
     use linear_equations::Gesv;
     use matrix::tests::M;
-    use types::Order;
+    use types::Order::*;
 
     #[test]
     fn real() {
-        let mut a = M(2i32, 2i32, vec![1.0f64, 4.0, 1.0, 2.0]);
-        let mut b = M(2i32, 1i32, vec![-2.0f64, 2.0]);
+        let mut a = M(ColMajor, 2i32, 2i32, vec![1.0f64, 4.0, 1.0, 2.0]);
+        let mut b = M(ColMajor, 2i32, 1i32, vec![-2.0f64, 2.0]);
 
-        Gesv::gesv(Order::ColMajor, &mut a, &mut b).unwrap();
+        Gesv::gesv(&mut a, &mut b).unwrap();
 
-        let M(_, _, x) = b;
+        let M(_, _, _, x) = b;
         assert_eq!(x, vec![3.0f64, -5.0]);
     }
 }

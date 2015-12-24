@@ -41,24 +41,29 @@ pub trait SymmetricMatrix<T>: Matrix<T> {
 pub mod tests {
     use libc::c_int;
     use matrix::Matrix;
+    use types::Order;
 
-    pub struct M<T>(pub c_int, pub c_int, pub Vec<T>);
+    pub struct M<T>(pub Order, pub c_int, pub c_int, pub Vec<T>);
 
     impl<T> Matrix<T> for M<T> {
         fn rows(&self) -> c_int {
-            self.0
-        }
-
-        fn cols(&self) -> c_int {
             self.1
         }
 
+        fn cols(&self) -> c_int {
+            self.2
+        }
+
+        fn order(&self) -> Order {
+            self.0
+        }
+
         fn as_ptr(&self) -> *const T {
-            self.2[..].as_ptr()
+            self.3[..].as_ptr()
         }
 
         fn as_mut_ptr(&mut self) -> *mut T {
-            (&mut self.2[..]).as_mut_ptr()
+            (&mut self.3[..]).as_mut_ptr()
         }
     }
 }

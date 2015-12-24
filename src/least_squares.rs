@@ -13,11 +13,11 @@ use matrix::{
     Matrix,
 };
 use scalar::Scalar;
-use types::{Order, Transpose};
+use types::Transpose;
 use util::ColMem;
 
 pub trait Gels: Sized {
-    fn gels(layout: Order, a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error> {
+    fn gels(a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<(), Error> {
         //TODO: nancheck
 
         let work_len = try!(Gels::gels_work_len(a_trans, a, b));
@@ -26,23 +26,23 @@ pub trait Gels: Sized {
             work.set_len(work_len as usize);
         }
 
-        Gels::gels_work(layout, a_trans, a, b, &mut work[..])
+        Gels::gels_work(a_trans, a, b, &mut work[..])
     }
 
-    fn gels_work(layout: Order, a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error>;
+    fn gels_work(a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error>;
     fn gels_work_len(a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>) -> Result<usize, Error>;
 }
 
 macro_rules! least_sq_impl(($($t: ident), +) => ($(
     impl Gels for $t {
-        fn gels_work(layout: Order, a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error> {
+        fn gels_work(a_trans: &Transpose, a: &mut Matrix<Self>, b: &mut Matrix<Self>, work: &mut [Self]) -> Result<(), Error> {
             let mut info: c_int = 0;
 
             let m = a.rows();
             let n = a.cols();
             let nrhs = b.cols();
-            let mut a_mem = ColMem::new(layout, a);
-            let mut b_mem = ColMem::new(layout, b);
+            let mut a_mem = ColMem::new(a.order(), a);
+            let mut b_mem = ColMem::new(b.order(), b);
 
             unsafe {
                 prefix!($t, gels_)(
@@ -104,23 +104,23 @@ mod gels_tests {
 
     #[test]
     fn col_major() {
-        let mut a = M(3i32, 2i32, vec![2.0f32,4.0,7.0,3.0,9.0,4.0]);
-        let mut b = M(3i32, 2i32, vec![2.0f32,4.0,7.0,6.0,18.0,8.0]);
+        let mut a = M(ColMajor, 3i32, 2i32, vec![2.0f32,4.0,7.0,3.0,9.0,4.0]);
+        let mut b = M(ColMajor, 3i32, 2i32, vec![2.0f32,4.0,7.0,6.0,18.0,8.0]);
 
-        Gels::gels(ColMajor, &Transpose::None, &mut a, &mut b).unwrap();
+        Gels::gels(&Transpose::None, &mut a, &mut b).unwrap();
 
-        let M(_, _, x) = b;
+        let M(_, _, _, x) = b;
         assert_eq!(x, vec![1.0, 0.0, 0.0, 0.0, 2.0, 0.0]);
     }
 
     #[test]
     fn row_major() {
-        let mut a = M(3i32, 2i32, vec![2.0f32,3.0,4.0,9.0,7.0,4.0]);
-        let mut b = M(3i32, 2i32, vec![2.0f32,3.0,4.0,9.0,7.0,4.0]);
+        let mut a = M(RowMajor, 3i32, 2i32, vec![2.0f32,3.0,4.0,9.0,7.0,4.0]);
+        let mut b = M(RowMajor, 3i32, 2i32, vec![2.0f32,3.0,4.0,9.0,7.0,4.0]);
 
-        Gels::gels(RowMajor, &Transpose::None, &mut a, &mut b).unwrap();
+        Gels::gels(&Transpose::None, &mut a, &mut b).unwrap();
 
-        let M(_, _, x) = b;
+        let M(_, _, _, x) = b;
         assert_eq!(x, vec![1.0, 0.0, 0.0, 1.0, 0.0, 0.0]);
     }
 }
