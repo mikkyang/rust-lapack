@@ -2,9 +2,82 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 use std::cmp;
+use std::ops::Drop;
 use std::ptr;
+use matrix::Matrix;
 use types::Order;
 use types::Order::*;
+
+pub struct ColMem<'a, T: 'a> {
+    source: &'a mut Matrix<T>,
+    lead: i32,
+    data: Option<Vec<T>>,
+}
+
+impl<'a, T> ColMem<'a, T> {
+    pub fn new<'b>(order: Order, mat: &'b mut Matrix<T>) -> ColMem<'b, T> {
+        let (lead, data) = match order {
+            ColMajor => (mat.rows(), None),
+            RowMajor => {
+                let m = mat.rows();
+                let n = mat.cols();
+                let lead = n;
+                let lead_t = cmp::max(1, m);
+
+                let len_t = (lead_t * cmp::max(1, n)) as usize;
+                let mut transpose = Vec::with_capacity(len_t);
+
+                unsafe {
+                    transpose.set_len(len_t);
+
+                    transpose_data(Order::RowMajor, m as isize, n as isize,
+                        mat.as_ptr(), lead as isize,
+                        transpose.as_mut_ptr(), lead_t as isize);
+                }
+
+                (lead_t, Some(transpose))
+            },
+        };
+
+        ColMem {
+            source: mat,
+            lead: lead,
+            data: data,
+        }
+    }
+
+    pub fn lead(&self) -> i32 { self.lead }
+
+    pub fn as_mut_ptr(&mut self) -> *mut T {
+        match self.data {
+            Some(ref mut v) => v.as_mut_ptr(),
+            None => self.source.as_mut_ptr(),
+        }
+    }
+
+    fn write_back(&mut self) {
+        let transpose = match self.data {
+            Some(ref v) => v,
+            None => return,
+        };
+
+        let ref mut mat: &mut Matrix<T> = self.source;
+        let m = mat.rows();
+        let n = mat.cols();
+        let lead = n;
+        let lead_t = cmp::max(1, m);
+
+        unsafe {
+            transpose_data(Order::ColMajor, m as isize, n as isize, transpose.as_ptr(), lead_t as isize, mat.as_mut_ptr(), lead as isize);
+        }
+    }
+}
+
+impl<'a, T> Drop for ColMem<'a, T> {
+    fn drop(&mut self) {
+        self.write_back();
+    }
+}
 
 pub unsafe fn transpose_data<T>(initial_layout: Order, m: isize, n: isize, input: *const T, ld_input: isize, output: *mut T, ld_output: isize) {
     let (x, y) = match initial_layout {
