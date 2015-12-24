@@ -41,20 +41,16 @@ macro_rules! least_sq_impl(($($t: ident), +) => ($(
             let m = a.rows();
             let n = a.cols();
             let nrhs = b.cols();
-
             let mut a_mem = ColMem::new(layout, a);
             let mut b_mem = ColMem::new(layout, b);
-
-            let lda = a_mem.lead();
-            let ldb = b_mem.lead();
 
             unsafe {
                 prefix!($t, gels_)(
                     a_trans.as_i8().as_mut(),
                     m.as_mut(), n.as_mut(),
                     nrhs.as_mut(),
-                    a_mem.as_mut_ptr(), lda.as_mut(),
-                    b_mem.as_mut_ptr(), ldb.as_mut(),
+                    a_mem.as_mut_ptr(), a_mem.lead().as_mut(),
+                    b_mem.as_mut_ptr(), b_mem.lead().as_mut(),
                     work.as_mut_ptr(), (work.len() as c_int).as_mut(),
                     &mut info as *mut c_int);
             }
