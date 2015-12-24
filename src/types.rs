@@ -3,14 +3,10 @@
 // license that can be found in the LICENSE file.
 
 #[cfg(feature = "default")]
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub enum Order {
-    RowMajor=101,
-    ColMajor=102,
-}
+pub use rblas::attribute::Order;
 
 #[cfg(not(feature = "default"))]
+#[derive(Copy, Clone)]
 pub enum Order {
     RowMajor,
     ColMajor,

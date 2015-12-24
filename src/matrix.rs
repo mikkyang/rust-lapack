@@ -7,6 +7,8 @@ use libc::c_int;
 use types::{
     Symmetry,
 };
+#[cfg(not(feature = "default"))]
+use types::Order;
 
 #[cfg(feature = "default")]
 pub use rblas::matrix::{Matrix, BandMatrix};
@@ -15,6 +17,7 @@ pub use rblas::matrix::{Matrix, BandMatrix};
 pub trait Matrix<T> {
     fn rows(&self) -> c_int;
     fn cols(&self) -> c_int;
+    fn order(&self) -> Order { Order::ColMajor }
     fn as_ptr(&self) -> *const T;
     fn as_mut_ptr(&mut self) -> *mut T;
 }
