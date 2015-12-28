@@ -16,8 +16,7 @@ use types::Compute;
 use util::ColMem;
 
 pub trait Geev<Eigenvalues>: Sized {
-    fn geev(a: &mut Matrix<Self>, values: &mut Vector<Eigenvalues>,
-        left: Option<&mut Matrix<Self>>, right: Option<&mut Matrix<Self>>) -> Result<(), Error> {
+    fn geev(a: &mut Matrix<Self>, left: Option<&mut Matrix<Self>>, right: Option<&mut Matrix<Self>>) -> Result<Vec<Eigenvalues>, Error> {
 
         let job_l = match &left {
             &Some(_) => Compute::Value,
@@ -35,17 +34,16 @@ pub trait Geev<Eigenvalues>: Sized {
             work.set_len(work_len as usize);
         }
 
-        Geev::work(a, values, left, right, &mut work[..])
+        Geev::work(a, left, right, &mut work[..])
     }
-    fn work(a: &mut Matrix<Self>, values: &mut Vector<Eigenvalues>,
-        left: Option<&mut Matrix<Self>>, right: Option<&mut Matrix<Self>>, work: &mut [Self]) -> Result<(), Error>;
+    fn work(a: &mut Matrix<Self>,
+        left: Option<&mut Matrix<Self>>, right: Option<&mut Matrix<Self>>, work: &mut [Self]) -> Result<Vec<Eigenvalues>, Error>;
     fn work_len(a: &mut Matrix<Self>, left: Compute, right: Compute) -> Result<usize, Error>;
 }
 
 macro_rules! real_eigen_impl(($($t: ident), +) => ($(
     impl Geev<Complex<$t>> for $t {
-        fn work(a: &mut Matrix<Self>, values: &mut Vector<Complex<$t>>,
-            left: Option<&mut Matrix<Self>>, right: Option<&mut Matrix<Self>>, work: &mut [Self]) -> Result<(), Error> {
+        fn work(a: &mut Matrix<Self>, left: Option<&mut Matrix<Self>>, right: Option<&mut Matrix<Self>>, work: &mut [Self]) -> Result<Vec<Complex<$t>>, Error> {
 
             let mut info: c_int = 0;
             let n = a.rows();
@@ -64,27 +62,29 @@ macro_rules! real_eigen_impl(($($t: ident), +) => ($(
                 None => (Compute::None, 1, ptr::null::<$t>() as *mut _),
             };
 
-            //TODO: this is really bad
-            let (real, imag) = unsafe {
-                let start = values.as_mut_ptr();
-                let mid = start.offset(n as isize);
-                (start as *mut $t, mid as *mut $t)
-            };
+            let mut real: Vec<_> = Vec::with_capacity(n as usize);
+            let mut imag: Vec<_> = Vec::with_capacity(n as usize);
 
             unsafe {
+                real.set_len(n as usize);
+                imag.set_len(n as usize);
+
                 prefix!($t, geev_)(
                     job_l.as_i8().as_mut(), job_r.as_i8().as_mut(),
                     n.as_mut(),
                     a_mem.as_mut_ptr(), a_mem.lead().as_mut(),
-                    real, imag,
+                    real.as_mut_ptr(), imag.as_mut_ptr(),
                     ptr_l, lead_l.as_mut(),
                     ptr_r, lead_r.as_mut(),
                     work.as_mut_ptr(), (work.len() as c_int).as_mut(),
                     &mut info as *mut c_int);
             };
 
+            let values = real.into_iter().zip(imag.into_iter())
+                .map(|(r, i)| Complex::new(r, i)).collect();
+
             match info {
-                0 => Ok(()),
+                0 => Ok(values),
                 x if x < 0 => Err(Error::IllegalParameter(-x as usize)),
                 x => Err(Error::DiagonalElementZero(x as usize)),
             }
@@ -126,6 +126,7 @@ real_eigen_impl!(f32, f64);
 
 #[cfg(test)]
 mod geev_tests {
+    use num::Complex;
     use eigenvalues::Geev;
     use matrix::tests::M;
     use types::Order::*;
@@ -133,12 +134,8 @@ mod geev_tests {
     #[test]
     fn real() {
         let mut a = M(RowMajor, 2i32, 2i32, vec![2.0f64, 7.0, -1.0, -6.0]);
-        let mut v = Vec::with_capacity(2);
-        unsafe { v.set_len(2) };
+        let lambda = Geev::geev(&mut a, None, None).unwrap();
 
-        Geev::geev(&mut a, &mut v, None, None).unwrap();
-
-        assert_eq!(v, vec![]);
+        assert_eq!(lambda, vec![Complex::new(1.0, 0.0), Complex::new(-5.0, 0.0)]);
     }
 }
-
