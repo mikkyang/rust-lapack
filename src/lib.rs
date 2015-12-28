@@ -11,6 +11,7 @@ extern crate rblas;
 
 pub use error::Error;
 pub use matrix::Matrix;
+pub use vector::Vector;
 pub use types::*;
 pub use eigenvalues::*;
 pub use general_eigenvalues::*;
@@ -24,6 +25,7 @@ mod util;
 pub mod ll;
 pub mod error;
 pub mod matrix;
+pub mod vector;
 pub mod types;
 pub mod linear_equations;
 pub mod least_squares;
