@@ -12,6 +12,20 @@ pub enum Order {
     ColMajor,
 }
 
+pub enum Compute {
+    None,
+    Value,
+}
+
+impl Compute {
+    pub fn as_i8(self) -> i8 {
+        match self {
+            Compute::None => 78,
+            Compute::Value => 86,
+        }
+    }
+}
+
 pub enum Symmetry {
     Upper,
     Lower,
