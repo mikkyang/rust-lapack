@@ -13,12 +13,12 @@ pub trait Gesvd<Eigenvalues>: Sized {
     fn gesvd(a: &mut Matrix<Self>, left: Option<&mut Matrix<Self>>, right: Option<&mut Matrix<Self>>) -> Result<Vec<Eigenvalues>, Error> {
 
         let job_l = match &left {
-            &Some(_) => Compute::Some,
+            &Some(_) => Compute::All,
             _ => Compute::None,
         };
 
         let job_r = match &right {
-            &Some(_) => Compute::Some,
+            &Some(_) => Compute::All,
             _ => Compute::None,
         };
 
@@ -43,19 +43,15 @@ macro_rules! real_svd_impl(($($t: ident), +) => ($(
             let m = a.rows();
             let n = a.cols();
 
-            if m < n {
-                return Err(Error::DimensionMismatch);
-            }
-
             let mut a_mem = ColMem::new(a.order(), a);
 
             let (job_l, lead_l, ptr_l) = match left {
-                Some(m) => (Compute::Some, m.rows(), m.as_mut_ptr()),
+                Some(m) => (Compute::All, m.rows(), m.as_mut_ptr()),
                 None => (Compute::None, 1, ptr::null::<$t>() as *mut _),
             };
 
             let (job_r, lead_r, ptr_r) = match right {
-                Some(m) => (Compute::Some, m.rows(), m.as_mut_ptr()),
+                Some(m) => (Compute::All, m.rows(), m.as_mut_ptr()),
                 None => (Compute::None, 1, ptr::null::<$t>() as *mut _),
             };
 

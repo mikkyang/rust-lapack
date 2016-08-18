@@ -26,8 +26,8 @@ impl Compute {
             Compute::None => 'N' as i8,
             Compute::Value => 'V' as i8,
             Compute::All => 'A' as i8,
-            Compute::Some => 'S' as i8,
-            Compute::OverwriteSome => 'O' as i8
+            Compute::Partial => 'S' as i8,
+            Compute::OverwritePartial => 'O' as i8
         }
     }
 }
