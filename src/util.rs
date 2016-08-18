@@ -8,6 +8,8 @@ use matrix::Matrix;
 use types::Order;
 use types::Order::*;
 
+/// ColMem is a utility structure for temporarily representing data
+/// from another matrix as in column-major format.
 pub struct ColMem<'a, T: 'a> {
     source: &'a mut Matrix<T>,
     lead: i32,
@@ -46,8 +48,10 @@ impl<'a, T> ColMem<'a, T> {
         }
     }
 
+    /// Return the leading storage dimension of the matrix.
     pub fn lead(&self) -> i32 { self.lead }
 
+    /// Return a mutable pointer to the data.
     pub fn as_mut_ptr(&mut self) -> *mut T {
         match self.data {
             Some(ref mut v) => v.as_mut_ptr(),

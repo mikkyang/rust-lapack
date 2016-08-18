@@ -15,6 +15,7 @@ pub use vector::Vector;
 pub use types::*;
 pub use eigenvalues::*;
 pub use general_eigenvalues::*;
+pub use svd::*;
 pub use least_squares::*;
 pub use linear_equations::*;
 
@@ -31,3 +32,4 @@ pub mod linear_equations;
 pub mod least_squares;
 pub mod eigenvalues;
 pub mod general_eigenvalues;
+pub mod svd;
