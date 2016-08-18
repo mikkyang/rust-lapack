@@ -15,13 +15,19 @@ pub enum Order {
 pub enum Compute {
     None,
     Value,
+    All,
+    Some,
+    OverwriteSome,
 }
 
 impl Compute {
     pub fn as_i8(self) -> i8 {
         match self {
-            Compute::None => 78,
-            Compute::Value => 86,
+            Compute::None => 'N' as i8,
+            Compute::Value => 'V' as i8,
+            Compute::All => 'A' as i8,
+            Compute::Some => 'S' as i8,
+            Compute::OverwriteSome => 'O' as i8
         }
     }
 }
