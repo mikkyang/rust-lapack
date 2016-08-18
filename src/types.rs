@@ -16,8 +16,8 @@ pub enum Compute {
     None,
     Value,
     All,
-    Some,
-    OverwriteSome,
+    Partial,
+    OverwritePartial,
 }
 
 impl Compute {
