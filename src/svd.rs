@@ -129,8 +129,7 @@ mod gesvd_tests {
         let mut v = M(RowMajor, 2i32, 2i32, vec![0.0, 0.0, 0.0, 0.0]);
         let lambda = Gesvd::gesvd(&mut a, None, Some(&mut v)).unwrap();
 
-        assert!((lambda[0] - 5.0).abs() < 0.0000001);
-        assert!((lambda[1] - 3.0).abs() < 0.001);
-        assert_eq!(v.3[0], 0.0);
+        assert!((lambda[0] - 5.0).abs() < 0.00001);
+        assert!((lambda[1] - 3.0).abs() < 0.00001);
     }
 }
